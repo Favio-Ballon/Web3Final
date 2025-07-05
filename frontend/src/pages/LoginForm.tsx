@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form"
-// import { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginRequest } from "../models/dto/LoginRequest";
 import { AuthService } from "../services/AuthService";
 import { URLS } from "../navigation/CONSTANTS";
+import { useAuth } from "../hooks/useAuth";
+import { useAppSelector } from "../redux/hooks";
 
 type Inputs = {
   username: string;
@@ -13,23 +15,23 @@ type Inputs = {
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-  // const { doLogin } = useAuth()
+  const { doLogin } = useAuth()
   const [formData, setFormData] = useState<Inputs>({
     username: "",
     password: "",
   });
-  // const email = useAppSelector((state) => state.auth.email);
-  // const is_staff = useAppSelector((state) => state.auth.is_staff);
+  const email = useAppSelector((state) => state.auth.email);
+  const rol = useAppSelector((state) => state.auth.rol);
   
-  // useEffect(() => {
-  //   if (email) {
-  //     if (is_staff) {
-  //       navigate(URLS.ADMINISTRACIONELECTORAL);
-  //     }else{
-  //     navigate(URLS.HOME);
-  //   }
-  //   }
-  // }, [email, navigate]);
+  useEffect(() => {
+    if (email) {
+      if (rol === "super_admin") {
+        navigate(URLS.ADMINISTRACIONELECTORAL);
+      }else{
+      navigate(URLS.HOME);
+    }
+    }
+  }, [email, navigate]);
 
   const {
     register,
