@@ -2,8 +2,6 @@ from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.models import User
-
 from autenticacion.models import CustomUser
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,6 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'username', 'is_staff', 'is_active', 'rol')
 
 class UserViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]  # Añade esta línea
+
     @action(detail=False, methods=['get'], url_path='me')
     def me(self, request):
         user = request.user
@@ -23,7 +23,7 @@ class UserViewSet(viewsets.ViewSet):
         if not request.user.is_superuser:
             return Response({'error': 'No tienes permiso para ver todos los usuarios'}, status=403)
 
-        users = User.objects.all()
+        users = CustomUser.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
@@ -37,15 +37,25 @@ class UserViewSet(viewsets.ViewSet):
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
         username = request.data.get('username')
-        rol = request.data.get(CustomUser.ROLE_CHOICES)
+        rol = request.data.get('rol')
+        is_superuser = False
+
+        if rol == 'super_admin':
+            is_superuser = True
+
 
         if not email or not password or not username:
             return Response({'error': 'El email, contraseña y nombre de usuario son requeridos'}, status=400)
+        if not first_name or not last_name:
+            return Response({'error': 'El nombre y apellido son requeridos'}, status=400)
 
-        if User.objects.filter(email=email).exists():
+        if rol not in ['super_admin', 'admin_padron', 'admin_elecciones', 'jurado']:
+            return Response({'error': 'Rol inválido'}, status=400)
+
+        if CustomUser.objects.filter(email=email).exists():
             return Response({'error': 'El email ya está en uso'}, status=400)
 
-        if User.objects.filter(username=username).exists():
+        if CustomUser.objects.filter(username=username).exists():
             return Response({'error': 'El nombre de usuario ya está en uso'}, status=400)
 
         user = CustomUser.objects.create_user(
@@ -54,7 +64,10 @@ class UserViewSet(viewsets.ViewSet):
             first_name=first_name,
             last_name=last_name,
             username=username,
-            rol=rol
+            rol=rol,
+            is_superuser=is_superuser,
+            is_staff=True,  # Assuming all created users are staff
+            is_active=True  # Assuming all created users are active
         )
 
         serializer = UserSerializer(user)
