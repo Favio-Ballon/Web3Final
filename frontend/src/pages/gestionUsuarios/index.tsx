@@ -1,9 +1,10 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from "react-router-dom";
+import { UsuariosForm } from "./usuariosForm";
 
 export default function UsersRoutes() {
   return (
     <Routes>
-      <Route path="" element={<div>Gestión de usuarios</div>} />
+      <Route path="" element={<UsuariosForm />} />
     </Routes>
   );
-} 
+}
