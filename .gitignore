@@ -8,3 +8,4 @@ sistemaGestionUsuario/autenticacion/models/__pycache__/CustomUser.cpython-311.py
 sistemaGestionUsuario/sistemaGestionUsuario/__pycache__/__init__.cpython-311.pyc
 sistemaGestionUsuario/sistemaGestionUsuario/__pycache__/settings.cpython-311.pyc
 sistemaGestionUsuario/sistemaGestionUsuario/__pycache__/urls.cpython-311.pyc
+frontend/ROLES_DOCUMENTATION.md
