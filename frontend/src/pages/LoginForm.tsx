@@ -32,6 +32,12 @@ export const LoginForm = () => {
 
       if (rol === "super_admin") {
         navigate(URLS.GESTIONUSUARIOS);
+      } else if (rol === "admin_padron") {
+        navigate(URLS.PADRONELECTORAL);
+      } else if (rol === "admin_elecciones") {
+        navigate(URLS.ADMINISTRACIONELECTORAL);
+      } else if (rol === "jurado") {
+        navigate(URLS.VOTACION);
       } else {
         navigate(URLS.HOME);
       }

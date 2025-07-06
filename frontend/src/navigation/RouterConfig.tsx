@@ -36,19 +36,19 @@ export default function RouterConfig() {
         } />
         
         <Route path={`${URLS.PADRONELECTORAL}/*`} element={
-          <ProtectedRoute requireAuth={true}>
+          <ProtectedRoute requiredRoles={["admin_padron"]}>
             <PadronElectoralRoutes />
           </ProtectedRoute>
         } />
         
         <Route path={`${URLS.ADMINISTRACIONELECTORAL}/*`} element={
-          <ProtectedRoute adminOnly={true}>
+          <ProtectedRoute requiredRoles={["admin_elecciones"]}>
             <AdminElectoralRoutes />
           </ProtectedRoute>
         } />
         
         <Route path={`${URLS.VOTACION}/*`} element={
-          <ProtectedRoute requireAuth={true}>
+          <ProtectedRoute requiredRoles={["jurado"]}>
             <VotacionRoutes />
           </ProtectedRoute>
         } />
