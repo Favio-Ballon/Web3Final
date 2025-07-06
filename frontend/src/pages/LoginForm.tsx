@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form"
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginRequest } from "../models/dto/LoginRequest";
@@ -15,54 +15,74 @@ type Inputs = {
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const { doLogin } = useAuth()
+  const { doLogin } = useAuth();
   const [formData, setFormData] = useState<Inputs>({
     username: "",
     password: "",
   });
   const email = useAppSelector((state) => state.auth.email);
   const rol = useAppSelector((state) => state.auth.rol);
-  
+
   useEffect(() => {
-    if (email) {
+    console.log("Email from state:", email);
+    console.log("Role from state:", rol);
+
+    if (email && rol) {
+      console.log("User authenticated, navigating based on role:", rol);
+
       if (rol === "super_admin") {
-        navigate(URLS.ADMINISTRACIONELECTORAL);
-      }else{
-      navigate(URLS.HOME);
+        navigate(URLS.GESTIONUSUARIOS);
+      } else {
+        navigate(URLS.HOME);
+      }
     }
-    }
-  }, [email, navigate]);
+  }, [email, rol, navigate]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
     const login: LoginRequest = {
       username: data.username,
       password: data.password,
     };
-    new AuthService().login(login.username, login.password).then((response) => {
+
+    try {
+      const response = await new AuthService().login(
+        login.username,
+        login.password
+      );
       console.log("Login successful", response);
-      // doLogin({
-      //               access_token: response.access,
-      //               refresh_token: response.refresh,
-      //               email: login.username,
-      //           });
-      navigate(URLS.HOME);
-    }).catch((error) => {
+
+      // Obtener información del usuario después del login
+      const userInfo = await new AuthService().me();
+      console.log("User info:", userInfo);
+
+      // Guardar en Redux con toda la información del usuario
+      doLogin({
+        access_token: response.access,
+        refresh_token: response.refresh,
+        email: userInfo.email,
+        rol: userInfo.rol,
+        first_name: userInfo.first_name,
+        last_name: userInfo.last_name,
+      });
+
+      // La navegación se hará automáticamente por el useEffect que escucha los cambios en email/rol
+    } catch (error) {
       console.error("Login failed", error);
       alert("Error en el inicio de sesión. Verifica tus credenciales.");
-    });
+    }
   };
 
   const [isLoading] = useState(false);
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/30">
-            <div className="w-full max-w-md p-8 bg-card rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-[1.02]">
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/30">
+      <div className="w-full max-w-md p-8 bg-card rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-[1.02]">
         <h2 className="text-2xl font-bold text-center mb-8 text-foreground">
           Login
         </h2>
@@ -75,7 +95,9 @@ export const LoginForm = () => {
               {...register("username", { required: true })}
               name="username"
               value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
               className={`w-full px-4 py-2 border ${
                 errors.username ? "border-destructive" : "border-input"
               } rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-transparent peer placeholder-transparent`}
@@ -89,7 +111,9 @@ export const LoginForm = () => {
               Username
             </label>
             {errors.username && (
-              <p className="mt-1 text-sm text-destructive">Este campo es requerido</p>
+              <p className="mt-1 text-sm text-destructive">
+                Este campo es requerido
+              </p>
             )}
           </div>
 
@@ -100,7 +124,9 @@ export const LoginForm = () => {
               {...register("password", { required: true })}
               name="password"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               className={`w-full px-4 py-2 border ${
                 errors.password ? "border-destructive" : "border-input"
               } rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-transparent peer placeholder-transparent pr-10`}
@@ -114,7 +140,9 @@ export const LoginForm = () => {
               Password
             </label>
             {errors.password && (
-              <p className="mt-1 text-sm text-destructive">Este campo es requerido</p>
+              <p className="mt-1 text-sm text-destructive">
+                Este campo es requerido
+              </p>
             )}
           </div>
 
@@ -137,4 +165,3 @@ export const LoginForm = () => {
     </div>
   );
 };
-
