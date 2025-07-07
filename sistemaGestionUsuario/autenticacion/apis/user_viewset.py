@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'username', 'is_staff', 'is_active', 'rol')
 
 class UserViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated]  # Añade esta línea
+    permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=['get'], url_path='me')
     def me(self, request):
@@ -72,3 +72,58 @@ class UserViewSet(viewsets.ViewSet):
 
         serializer = UserSerializer(user)
         return Response(serializer.data, status=201)  # Return created user data
+
+    @action(methods=['put'], detail=True, url_path='update')
+    def update_user(self, request,pk=None):
+        if not request.user.is_superuser:
+            return Response({'error': 'No tienes permiso para actualizar usuarios'}, status=403)
+
+        user_id = pk
+        user = CustomUser.objects.filter(id=user_id).first()
+        email = request.data.get('email')
+        password = request.data.get('password')
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
+        username = request.data.get('username')
+        rol = request.data.get('rol')
+
+
+        if not user:
+            return Response({'error': 'Usuario no encontrado'}, status=404)
+
+        if email:
+            user.email = email
+        if password:
+            user.set_password(password)
+        if first_name:
+            user.first_name = first_name
+        if last_name:
+            user.last_name = last_name
+        if username:
+            user.username = username
+        if rol:
+            if rol not in ['super_admin', 'admin_padron', 'admin_elecciones', 'jurado']:
+                return Response({'error': 'Rol inválido'}, status=400)
+            user.rol = rol
+            user.is_superuser = (rol == 'super_admin')
+
+        try:
+            user.save()
+            serializer = UserSerializer(user)
+            return Response(serializer.data, status=200)  # Return updated user data
+        except serializers.ValidationError as e:
+            return Response({'error': str(e)}, status=400)
+
+    @action(methods=['delete'], detail=True, url_path='delete')
+    def delete_user(self, request, pk=None):
+        if not request.user.is_superuser:
+            return Response({'error': 'No tienes permiso para eliminar usuarios'}, status=403)
+
+        user_id = pk
+        user = CustomUser.objects.filter(id=user_id).first()
+
+        if not user:
+            return Response({'error': 'Usuario no encontrado'}, status=404)
+
+        user.delete()
+        return Response({'message': 'Usuario eliminado correctamente'}, status=204)
