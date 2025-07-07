@@ -60,6 +60,8 @@ namespace sistemaPadronElectoral.Controllers
             votante.Apellido = votanteDto.Apellido;
             votante.Direccion = votanteDto.Direccion;
             votante.FechaNacimiento = votanteDto.FechaNacimiento;
+            votante.Latitud = votanteDto.Latitud;
+            votante.Longitud = votanteDto.Longitud;
 
             Directory.CreateDirectory(_uploadsFolder);
 
