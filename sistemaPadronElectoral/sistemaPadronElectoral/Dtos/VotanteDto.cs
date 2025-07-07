@@ -30,7 +30,17 @@ namespace sistemaPadronElectoral.Dtos
         public string Ciudad { get; set; }
         [Required(ErrorMessage = "La provincia es obligatoria.")]
         public string Provincia { get; set; }
+    }
 
-        }   
-
+    public class VotanteEstadoPadronDto
+    {
+        public int Ci { get; set; }
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public DateOnly FechaNacimiento { get; set; }
+        public string Departamento { get; set; }
+        public string Ciudad { get; set; }
+        public string Provincia { get; set; }
+        public string Recinto { get; set; } // Recinto electoral
+    }
 }

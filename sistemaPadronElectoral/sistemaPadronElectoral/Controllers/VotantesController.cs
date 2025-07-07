@@ -48,8 +48,36 @@ namespace sistemaPadronElectoral.Controllers
             return votante;
         }
 
+        // GET: api/Votantes/estado/{ci}
+        [HttpGet("estado/{ci}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<VotanteEstadoPadronDto>> GetEstadoPadron(int ci)
+        {
+            var votante = await _context.Votante
+                .AsNoTracking()
+                .FirstOrDefaultAsync(v => v.Ci == ci);
+
+            if (votante == null)
+            {
+                return NotFound();
+            }
+
+            string recinto = "Recinto asignado";
+            var dto = new VotanteEstadoPadronDto
+            {
+                Ci = votante.Ci,
+                Nombre = votante.Nombre,
+                Apellido = votante.Apellido,
+                FechaNacimiento = votante.FechaNacimiento,
+                Recinto = recinto
+            };
+
+            return dto;
+        }
+
         // PUT: api/Votantes/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin_padron")]
         public async Task<IActionResult> PutVotante(Guid id, [FromForm] VotanteDto votanteDto)
         {
             Console.WriteLine($"[LOG] PUT /api/votantes/{{id}} at {DateTime.UtcNow}");
@@ -123,7 +151,7 @@ namespace sistemaPadronElectoral.Controllers
 
         // POST: api/Votantes
         [HttpPost]
-        [Authorize(Roles = "super_admin")]
+        [Authorize(Roles = "admin_padron")]
         public async Task<ActionResult<Votante>> PostVotante([FromForm] VotanteDto votanteDto)
         {
             Console.WriteLine($"[LOG] POST /api/votantes at {DateTime.UtcNow}");
@@ -179,6 +207,7 @@ namespace sistemaPadronElectoral.Controllers
 
         // DELETE: api/Votantes/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin_padron")]
         public async Task<IActionResult> DeleteVotante(Guid id)
         {
             Console.WriteLine($"[LOG] DELETE /api/votantes/{{id}} at {DateTime.UtcNow}");
