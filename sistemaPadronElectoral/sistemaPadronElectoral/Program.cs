@@ -1,4 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using SistemaPadronElectoral.data;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<SistemaPadronElectoralContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SistemaPadronElectoralContext") ?? throw new InvalidOperationException("Connection string 'SistemaPadronElectoralContext' not found.")));
 
 // Add services to the container.
 
