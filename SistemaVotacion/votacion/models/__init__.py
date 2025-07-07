@@ -1,0 +1,1 @@
+from .voto import Voto
