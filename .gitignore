@@ -11,3 +11,10 @@ sistemaGestionUsuario/sistemaGestionUsuario/__pycache__/urls.cpython-311.pyc
 frontend/ROLES_DOCUMENTATION.md
 
 sistemaPadronElectoral/.vs/
+
+sistemaPadronElectoral/obj/
+
+sistemaPadronElectoral/sistemaPadronElectoral/bin/
+
+sistemaPadronElectoral/sistemaPadronElectoral/obj/
+/sistemaPadronElectoral/sistemaPadronElectoral/wwwroot/uploads
