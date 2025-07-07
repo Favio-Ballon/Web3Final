@@ -66,6 +66,9 @@ namespace sistemaPadronElectoral.Controllers
             votante.FechaNacimiento = votanteDto.FechaNacimiento;
             votante.Latitud = votanteDto.Latitud;
             votante.Longitud = votanteDto.Longitud;
+            votante.Departamento = votanteDto.Departamento;
+            votante.Ciudad = votanteDto.Ciudad;
+            votante.Provincia = votanteDto.Provincia;
 
             Directory.CreateDirectory(_uploadsFolder);
 
@@ -134,7 +137,10 @@ namespace sistemaPadronElectoral.Controllers
                 Direccion = votanteDto.Direccion,
                 FechaNacimiento = votanteDto.FechaNacimiento,
                 Latitud = votanteDto.Latitud,
-                Longitud = votanteDto.Longitud
+                Longitud = votanteDto.Longitud,
+                Departamento = votanteDto.Departamento,
+                Ciudad = votanteDto.Ciudad,
+                Provincia = votanteDto.Provincia
             };
 
             if (votanteDto.Foto != null)

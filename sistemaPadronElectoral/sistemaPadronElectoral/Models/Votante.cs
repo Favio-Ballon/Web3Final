@@ -19,6 +19,9 @@ namespace SistemaPadronElectoral.Models
         public decimal Latitud { get; set; }
 
         public decimal Longitud { get; set; }
+        public string Departamento { get; set; }
+        public string Ciudad { get; set; }
+        public string Provincia { get; set; }
 
         public Votante()
         {

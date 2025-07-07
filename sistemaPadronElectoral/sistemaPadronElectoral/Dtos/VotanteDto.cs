@@ -24,6 +24,13 @@ namespace sistemaPadronElectoral.Dtos
         public decimal Latitud { get; set; }
         [Required(ErrorMessage = "La longitud es obligatoria.")]
         public decimal Longitud { get; set; }
-    }   
+        [Required(ErrorMessage = "El departamento es obligatorio.")]
+        public string Departamento { get; set; }
+        [Required(ErrorMessage = "La ciudad es obligatoria.")]
+        public string Ciudad { get; set; }
+        [Required(ErrorMessage = "La provincia es obligatoria.")]
+        public string Provincia { get; set; }
+
+        }   
 
 }
