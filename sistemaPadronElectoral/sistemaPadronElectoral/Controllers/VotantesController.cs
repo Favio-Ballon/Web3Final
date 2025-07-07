@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using sistemaPadronElectoral.Dtos;
+using SistemaPadronElectoral.data;
+using SistemaPadronElectoral.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SistemaPadronElectoral.Models;
-using SistemaPadronElectoral.data;
-using sistemaPadronElectoral.Dtos;
 
 namespace sistemaPadronElectoral.Controllers
 {
@@ -28,6 +29,7 @@ namespace sistemaPadronElectoral.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Votante>>> GetVotante()
         {
+            Console.WriteLine($"[LOG] GET /api/votantes at {DateTime.UtcNow}");
             return await _context.Votante.ToListAsync();
         }
 
@@ -35,6 +37,7 @@ namespace sistemaPadronElectoral.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Votante>> GetVotante(Guid id)
         {
+            Console.WriteLine($"[LOG] GET /api/votantes/{{id}} at {DateTime.UtcNow}");
             var votante = await _context.Votante.FindAsync(id);
 
             if (votante == null)
@@ -49,6 +52,7 @@ namespace sistemaPadronElectoral.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVotante(Guid id, [FromForm] VotanteDto votanteDto)
         {
+            Console.WriteLine($"[LOG] PUT /api/votantes/{{id}} at {DateTime.UtcNow}");
             var votante = await _context.Votante.FindAsync(id);
             if (votante == null)
             {
@@ -116,8 +120,10 @@ namespace sistemaPadronElectoral.Controllers
 
         // POST: api/Votantes
         [HttpPost]
+        [Authorize(Roles = "super_admin")]
         public async Task<ActionResult<Votante>> PostVotante([FromForm] VotanteDto votanteDto)
         {
+            Console.WriteLine($"[LOG] POST /api/votantes at {DateTime.UtcNow}");
             Directory.CreateDirectory(_uploadsFolder);
 
             var votante = new Votante
@@ -169,6 +175,7 @@ namespace sistemaPadronElectoral.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVotante(Guid id)
         {
+            Console.WriteLine($"[LOG] DELETE /api/votantes/{{id}} at {DateTime.UtcNow}");
             var votante = await _context.Votante.FindAsync(id);
             if (votante == null)
             {
