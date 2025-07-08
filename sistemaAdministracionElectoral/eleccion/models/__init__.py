@@ -5,3 +5,4 @@ from .cargo import Cargo
 from .candidatura import Candidatura
 from .recinto import Recinto
 from .mesa import Mesa
+from .votante import Votante
