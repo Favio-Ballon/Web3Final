@@ -33,9 +33,11 @@ apiClient.interceptors.response.use(
           { withCredentials: true }
         );
       } catch (authError) {
-        alert("Error al obtener la libro: " + authError);
         if (window.location.pathname !== "/login") {
           window.location.href = "/login";
+          // Se limpia las variables globales de redux, no las de localStorag
+
+
         }
         console.log("auth error", authError);
         return Promise.reject(authError);

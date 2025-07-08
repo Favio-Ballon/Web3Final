@@ -39,7 +39,8 @@ export const useAuth = () => {
     );
   };
 
-  const isAuthenticated = !!email;
+  // La autenticación se basa en si tenemos datos del usuario válidos del servidor
+  const isAuthenticated = !!email && isInitialized;
 
   const hasRole = (requiredRole: string) => {
     return rol === requiredRole;
@@ -72,13 +73,13 @@ export const useAuth = () => {
       });
   };
   useEffect(() => {
-    // Solo ejecutar si no está inicializado
+    // Siempre validar el estado de autenticación con el servidor al montar
     if (!isInitialized) {
       new AuthService()
         .me()
         .then((response) => {
           if (response.email) {
-            console.log("User is logged in with email:", response);
+            console.log("User authenticated with server:", response);
             dispatch(
               loginUser({
                 email: response.email,
@@ -88,24 +89,17 @@ export const useAuth = () => {
               })
             );
           } else {
-            // Marcar como inicializado aunque no haya usuario
+            // Si no hay usuario válido, marcar como inicializado
             dispatch(setInitialized(true));
           }
         })
         .catch(() => {
-          // En caso de error, marcar como inicializado
+          // En caso de error (no autenticado, token expirado, etc.)
+          // marcar como inicializado sin datos de usuario
           dispatch(setInitialized(true));
         });
-    } else if (email) {
-      // Si ya está inicializado y hay email, significa que se recuperó de la persistencia
-      console.log("Auth state recovered from persistence:", {
-        email,
-        rol,
-        first_name,
-        last_name,
-      });
     }
-  }, [dispatch, isInitialized, email, rol, first_name, last_name]);
+  }, [dispatch, isInitialized]);
 
   return {
     email,
