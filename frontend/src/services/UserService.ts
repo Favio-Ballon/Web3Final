@@ -5,7 +5,7 @@ export class UserService {
   getUsers(): Promise<Array<User>> {
     return new Promise<Array<User>>((resolve, reject) => {
       apiClient
-        .get("info/all/")
+        .get("usuario/info/all/")
         .then((response) => {
           // Handle different possible response structures
           const data = response.data?.results || response.data || [];
@@ -21,7 +21,7 @@ export class UserService {
   createUser(user: User): Promise<User> {
     return new Promise<User>((resolve, reject) => {
       apiClient
-        .post("info/create/", user)
+        .post("usuario/info/create/", user)
         .then((response) => {
           resolve(response.data);
         })
@@ -33,7 +33,7 @@ export class UserService {
   updateUser(user: User, id: number): Promise<User> {
     return new Promise<User>((resolve, reject) => {
       apiClient
-        .put(`info/${id}/update/`, user)
+        .put(`usuario/info/${id}/update/`, user)
         .then((response) => {
           resolve(response.data);
         })
@@ -45,7 +45,7 @@ export class UserService {
   deleteUser(id: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       apiClient
-        .delete(`info/${id}/delete/`)
+        .delete(`usuario/info/${id}/delete/`)
         .then(() => {
           resolve();
         })

@@ -58,7 +58,7 @@ export class AuthService {
   me(): Promise<UserInfoResponse> {
     return new Promise<UserInfoResponse>((resolve, reject) => {
       apiClient
-        .get("info/me/")
+        .get("usuario/info/me/")
         .then((response) => {
           resolve(response.data);
         })
@@ -75,7 +75,7 @@ export class AuthService {
   all(): Promise<Array<UserInfoResponse>> {
     return new Promise<Array<UserInfoResponse>>((resolve, reject) => {
       apiClient
-        .get("info/all/")
+        .get("usuario/info/all/")
         .then((response) => {
           resolve(response.data);
         })
