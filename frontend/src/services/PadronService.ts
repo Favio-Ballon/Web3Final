@@ -1,6 +1,7 @@
 import {
   Votante,
   VotanteCreateRequest,
+  VotantePublic,
   VotanteUpdateRequest,
 } from "../models/Votante";
 import apiClient from "./interceptors";
@@ -81,8 +82,8 @@ export class PadronService {
     });
   }
 
-  getVotanteByCi(ci: number): Promise<Votante> {
-    return new Promise<Votante>((resolve, reject) => {
+  getVotanteByCi(ci: number): Promise<VotantePublic> {
+    return new Promise<VotantePublic>((resolve, reject) => {
       apiClient
         .get(`padron/votantes/estado/${ci}`)
         .then((response) => {
@@ -97,6 +98,7 @@ export class PadronService {
     });
   }
 
+  
   updateVotante(votante: VotanteUpdateRequest, id: number): Promise<Votante> {
     return new Promise<Votante>((resolve, reject) => {
       const formData = new FormData();

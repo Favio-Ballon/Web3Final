@@ -5,5 +5,6 @@ export const URLS = {
   PADRONELECTORAL: "/padrón-electoral",
   ADMINISTRACIONELECTORAL: "/admin",
   VOTACION: "/voting",
+  VERIFICACION_PADRON: "/verificar-padron",
   NOT_FOUND: "*",
 };

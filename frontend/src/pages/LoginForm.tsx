@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { LoginRequest } from "../models/dto/LoginRequest";
 import { AuthService } from "../services/AuthService";
 import { URLS } from "../navigation/CONSTANTS";
@@ -166,6 +166,19 @@ export const LoginForm = () => {
               Registrate
             </a>
           </p>
+
+          {/* Enlace para verificación pública del padrón */}
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-sm text-center text-muted-foreground mb-2">
+              ¿Quieres verificar tu estado en el padrón electoral?
+            </p>
+            <Link
+              to={URLS.VERIFICACION_PADRON}
+              className="block w-full py-2 px-4 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200 text-center"
+            >
+              Verificar Padrón Electoral
+            </Link>
+          </div>
         </form>
       </div>
     </div>
