@@ -1,5 +1,24 @@
-import { Votante, VotanteCreateRequest } from "../models/Votante";
+import {
+  Votante,
+  VotanteCreateRequest,
+  VotanteUpdateRequest,
+} from "../models/Votante";
 import apiClient from "./interceptors";
+
+// Utility function to format coordinates safely
+const formatCoordinate = (coord: number): string => {
+  // Ensure it's a number
+  const num = Number(coord);
+  if (isNaN(num)) {
+    throw new Error(`Invalid coordinate: ${coord}`);
+  }
+
+  const formatted = num.toFixed(6).replace(".", ",");
+
+  console.log(`Coordinate formatting: ${coord} -> ${num} -> ${formatted}`);
+
+  return formatted;
+};
 
 export class PadronService {
   getVotantes(): Promise<Array<Votante>> {
@@ -27,8 +46,18 @@ export class PadronService {
       formData.append("apellido", votante.apellido);
       formData.append("direccion", votante.direccion);
       formData.append("fechaNacimiento", votante.fechaNacimiento);
-      formData.append("latitud", votante.latitud.toString());
-      formData.append("longitud", votante.longitud.toString());
+
+      // Ensure coordinates are formatted with comma as decimal separator
+      const latitudStr = formatCoordinate(votante.latitud);
+      const longitudStr = formatCoordinate(votante.longitud);
+
+      console.log("Sending coordinates (create):", {
+        latitud: latitudStr,
+        longitud: longitudStr,
+      });
+
+      formData.append("latitud", latitudStr);
+      formData.append("longitud", longitudStr);
       formData.append("departamento", votante.departamento);
       formData.append("ciudad", votante.ciudad);
       formData.append("provincia", votante.provincia);
@@ -68,7 +97,7 @@ export class PadronService {
     });
   }
 
-  updateVotante(votante: VotanteCreateRequest, id: number): Promise<Votante> {
+  updateVotante(votante: VotanteUpdateRequest, id: number): Promise<Votante> {
     return new Promise<Votante>((resolve, reject) => {
       const formData = new FormData();
 
@@ -77,16 +106,32 @@ export class PadronService {
       formData.append("apellido", votante.apellido);
       formData.append("direccion", votante.direccion);
       formData.append("fechaNacimiento", votante.fechaNacimiento);
-      formData.append("latitud", votante.latitud.toString());
-      formData.append("longitud", votante.longitud.toString());
+
+      // Ensure coordinates are formatted with comma as decimal separator
+      const latitudStr = formatCoordinate(votante.latitud);
+      const longitudStr = formatCoordinate(votante.longitud);
+
+      console.log("Sending coordinates (update):", {
+        latitud: latitudStr,
+        longitud: longitudStr,
+      });
+
+      formData.append("latitud", latitudStr);
+      formData.append("longitud", longitudStr);
       formData.append("departamento", votante.departamento);
       formData.append("ciudad", votante.ciudad);
       formData.append("provincia", votante.provincia);
 
-      // Append files
-      formData.append("foto", votante.foto);
-      formData.append("ciReverso", votante.ciReverso);
-      formData.append("ciAnverso", votante.ciAnverso);
+      // Only append files if they are present
+      if (votante.foto) {
+        formData.append("foto", votante.foto);
+      }
+      if (votante.ciReverso) {
+        formData.append("ciReverso", votante.ciReverso);
+      }
+      if (votante.ciAnverso) {
+        formData.append("ciAnverso", votante.ciAnverso);
+      }
 
       apiClient
         .put(`padron/votantes/${id}`, formData, {

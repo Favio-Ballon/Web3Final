@@ -9,3 +9,5 @@ sistemaGestionUsuario/sistemaGestionUsuario/__pycache__/__init__.cpython-311.pyc
 sistemaGestionUsuario/sistemaGestionUsuario/__pycache__/settings.cpython-311.pyc
 sistemaGestionUsuario/sistemaGestionUsuario/__pycache__/urls.cpython-311.pyc
 frontend/ROLES_DOCUMENTATION.md
+frontend/.env
+frontend/GOOGLE_MAPS_SETUP.md

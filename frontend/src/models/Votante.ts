@@ -30,3 +30,19 @@ export interface VotanteCreateRequest {
   ciudad: string;
   provincia: string;
 }
+
+export interface VotanteUpdateRequest {
+  ci: number;
+  nombre: string;
+  apellido: string;
+  direccion: string;
+  foto?: File;
+  ciReverso?: File;
+  ciAnverso?: File;
+  fechaNacimiento: string;
+  latitud: number;
+  longitud: number;
+  departamento: string;
+  ciudad: string;
+  provincia: string;
+}

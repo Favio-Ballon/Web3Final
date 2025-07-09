@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
-import { Votante, VotanteCreateRequest } from "../../models/Votante";
+import {
+  Votante,
+  VotanteCreateRequest,
+  VotanteUpdateRequest,
+} from "../../models/Votante";
 import { PadronService } from "../../services/PadronService";
 import { useAuth } from "../../hooks/useAuth";
-import { FiPlus, FiEdit2, FiTrash2, FiLogOut } from "react-icons/fi";
+import { FiPlus, FiEdit2, FiTrash2, FiLogOut, FiMapPin } from "react-icons/fi";
+import { LocationPicker } from "../../components/LocationPicker";
 
 interface FormData {
   ci: string;
@@ -67,6 +72,7 @@ export const PadronForm = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [currentVotanteId, setCurrentVotanteId] = useState<number | null>(null);
   const [formData, setFormData] = useState<FormData>({
     ci: "",
@@ -107,8 +113,26 @@ export const PadronForm = () => {
     if (!formData.direccion) newErrors.direccion = "Dirección obligatoria";
     if (!formData.fechaNacimiento)
       newErrors.fechaNacimiento = "Fecha de nacimiento obligatoria";
-    if (!formData.latitud) newErrors.latitud = "Latitud obligatoria";
-    if (!formData.longitud) newErrors.longitud = "Longitud obligatoria";
+
+    // Validación de coordenadas
+    if (!formData.latitud) {
+      newErrors.latitud = "Latitud obligatoria";
+    } else {
+      const lat = parseFloat(formData.latitud);
+      if (isNaN(lat) || lat < -90 || lat > 90) {
+        newErrors.latitud = "Latitud debe estar entre -90 y 90";
+      }
+    }
+
+    if (!formData.longitud) {
+      newErrors.longitud = "Longitud obligatoria";
+    } else {
+      const lng = parseFloat(formData.longitud);
+      if (isNaN(lng) || lng < -180 || lng > 180) {
+        newErrors.longitud = "Longitud debe estar entre -180 y 180";
+      }
+    }
+
     if (!formData.departamento)
       newErrors.departamento = "Departamento obligatorio";
     if (!formData.ciudad) newErrors.ciudad = "Ciudad obligatoria";
@@ -127,14 +151,35 @@ export const PadronForm = () => {
   const handleCreate = async () => {
     if (validateForm()) {
       try {
+        // Parse and validate coordinates (convert comma to dot for parseFloat)
+        const latStr = formData.latitud.replace(/,/g, ".");
+        const lngStr = formData.longitud.replace(/,/g, ".");
+        const latitud = parseFloat(latStr);
+        const longitud = parseFloat(lngStr);
+
+        // Additional validation
+        if (isNaN(latitud) || latitud < -90 || latitud > 90) {
+          alert("Latitud inválida. Debe estar entre -90 y 90.");
+          return;
+        }
+        if (isNaN(longitud) || longitud < -180 || longitud > 180) {
+          alert("Longitud inválida. Debe estar entre -180 y 180.");
+          return;
+        }
+
+        console.log("PadronForm - Creating voter with coordinates:", {
+          latitud,
+          longitud,
+        });
+
         const votanteData: VotanteCreateRequest = {
           ci: parseInt(formData.ci),
           nombre: formData.nombre,
           apellido: formData.apellido,
           direccion: formData.direccion,
           fechaNacimiento: formData.fechaNacimiento,
-          latitud: parseFloat(formData.latitud),
-          longitud: parseFloat(formData.longitud),
+          latitud: latitud,
+          longitud: longitud,
           departamento: formData.departamento,
           ciudad: formData.ciudad,
           provincia: formData.provincia,
@@ -167,20 +212,42 @@ export const PadronForm = () => {
   const handleEdit = async () => {
     if (validateForm() && currentVotanteId) {
       try {
-        const votanteData: VotanteCreateRequest = {
+        // Parse and validate coordinates (convert comma to dot for parseFloat)
+        const latStr = formData.latitud.replace(/,/g, ".");
+        const lngStr = formData.longitud.replace(/,/g, ".");
+        const latitud = parseFloat(latStr);
+        const longitud = parseFloat(lngStr);
+
+        // Additional validation
+        if (isNaN(latitud) || latitud < -90 || latitud > 90) {
+          alert("Latitud inválida. Debe estar entre -90 y 90.");
+          return;
+        }
+        if (isNaN(longitud) || longitud < -180 || longitud > 180) {
+          alert("Longitud inválida. Debe estar entre -180 y 180.");
+          return;
+        }
+
+        console.log("PadronForm - Updating voter with coordinates:", {
+          latitud,
+          longitud,
+        });
+
+        const votanteData: VotanteUpdateRequest = {
           ci: parseInt(formData.ci),
           nombre: formData.nombre,
           apellido: formData.apellido,
           direccion: formData.direccion,
           fechaNacimiento: formData.fechaNacimiento,
-          latitud: parseFloat(formData.latitud),
-          longitud: parseFloat(formData.longitud),
+          latitud: latitud,
+          longitud: longitud,
           departamento: formData.departamento,
           ciudad: formData.ciudad,
           provincia: formData.provincia,
-          foto: formData.foto!,
-          ciReverso: formData.ciReverso!,
-          ciAnverso: formData.ciAnverso!,
+          // Only include images if they are present
+          ...(formData.foto && { foto: formData.foto }),
+          ...(formData.ciReverso && { ciReverso: formData.ciReverso }),
+          ...(formData.ciAnverso && { ciAnverso: formData.ciAnverso }),
         };
 
         await new PadronService().updateVotante(votanteData, currentVotanteId);
@@ -203,6 +270,25 @@ export const PadronForm = () => {
         console.error("Error al actualizar votante:", error);
       }
     }
+  };
+
+  const handleLocationSelect = (lat: number, lng: number) => {
+    // Ensure proper formatting with 6 decimals and comma as decimal separator
+    const latStr = lat.toFixed(6).replace(".", ",");
+    const lngStr = lng.toFixed(6).replace(".", ",");
+
+    console.log("PadronForm - Coordenadas seleccionadas:", {
+      lat,
+      lng,
+      latStr,
+      lngStr,
+    });
+
+    setFormData({
+      ...formData,
+      latitud: latStr,
+      longitud: lngStr,
+    });
   };
 
   const handleDelete = async () => {
@@ -272,7 +358,7 @@ export const PadronForm = () => {
                 ) : votantes && votantes.length > 0 ? (
                   votantes.map((votante, index) => (
                     <tr
-                      key={votante.id || votante.ci + index}
+                      key={votante.codigo || votante.ci + index}
                       className="border-t border-border hover:bg-muted/50"
                     >
                       <td className="px-6 py-4 text-sm text-foreground">
@@ -439,42 +525,101 @@ export const PadronForm = () => {
                     )}
                   </div>
 
-                  {/* Latitud */}
-                  <div>
-                    <input
-                      type="number"
-                      step="any"
-                      placeholder="Latitud"
-                      value={formData.latitud}
-                      onChange={(e) =>
-                        setFormData({ ...formData, latitud: e.target.value })
-                      }
-                      className="w-full border border-input rounded-sm p-2"
-                    />
-                    {errors.latitud && (
-                      <p className="text-destructive text-sm">
-                        {errors.latitud}
-                      </p>
-                    )}
-                  </div>
+                  {/* Coordenadas */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2">
+                      Ubicación Geográfica
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      {/* Latitud */}
+                      <div>
+                        <input
+                          type="number"
+                          step="any"
+                          min="-90"
+                          max="90"
+                          placeholder="Latitud (-90 a 90)"
+                          value={formData.latitud}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            const numValue = parseFloat(value);
+                            // Solo actualizar si el valor está en rango válido o está vacío
+                            if (
+                              value === "" ||
+                              (!isNaN(numValue) &&
+                                numValue >= -90 &&
+                                numValue <= 90)
+                            ) {
+                              setFormData({
+                                ...formData,
+                                latitud: value,
+                              });
+                            }
+                          }}
+                          className="w-full border border-input rounded-sm p-2"
+                        />
+                        {errors.latitud && (
+                          <p className="text-destructive text-sm">
+                            {errors.latitud}
+                          </p>
+                        )}
+                      </div>
 
-                  {/* Longitud */}
-                  <div>
-                    <input
-                      type="number"
-                      step="any"
-                      placeholder="Longitud"
-                      value={formData.longitud}
-                      onChange={(e) =>
-                        setFormData({ ...formData, longitud: e.target.value })
-                      }
-                      className="w-full border border-input rounded-sm p-2"
-                    />
-                    {errors.longitud && (
-                      <p className="text-destructive text-sm">
-                        {errors.longitud}
-                      </p>
-                    )}
+                      {/* Longitud */}
+                      <div>
+                        <input
+                          type="number"
+                          step="any"
+                          min="-180"
+                          max="180"
+                          placeholder="Longitud (-180 a 180)"
+                          value={formData.longitud}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            const numValue = parseFloat(value);
+                            // Solo actualizar si el valor está en rango válido o está vacío
+                            if (
+                              value === "" ||
+                              (!isNaN(numValue) &&
+                                numValue >= -180 &&
+                                numValue <= 180)
+                            ) {
+                              setFormData({
+                                ...formData,
+                                longitud: value,
+                              });
+                            }
+                          }}
+                          className="w-full border border-input rounded-sm p-2"
+                        />
+                        {errors.longitud && (
+                          <p className="text-destructive text-sm">
+                            {errors.longitud}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Botón del mapa */}
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            console.log(
+                              "PadronForm - Opening LocationPicker with coordinates:",
+                              {
+                                latitud: formData.latitud,
+                                longitud: formData.longitud,
+                              }
+                            );
+                            setIsLocationPickerOpen(true);
+                          }}
+                          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-secondary text-secondary-foreground border border-input rounded-sm hover:bg-secondary/80"
+                        >
+                          <FiMapPin size={16} />
+                          Seleccionar en Mapa
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Departamento */}
@@ -660,6 +805,44 @@ export const PadronForm = () => {
               </div>
             </div>
           )}
+
+          {/* Location Picker Modal */}
+          <LocationPicker
+            isOpen={isLocationPickerOpen}
+            onClose={() => {
+              console.log("PadronForm - Closing LocationPicker");
+              setIsLocationPickerOpen(false);
+            }}
+            onLocationSelect={handleLocationSelect}
+            initialLat={
+              formData.latitud
+                ? (() => {
+                    const parsed = parseFloat(
+                      formData.latitud.replace(",", ".")
+                    );
+                    console.log("PadronForm - Passing initialLat:", {
+                      original: formData.latitud,
+                      parsed,
+                    });
+                    return parsed;
+                  })()
+                : undefined
+            }
+            initialLng={
+              formData.longitud
+                ? (() => {
+                    const parsed = parseFloat(
+                      formData.longitud.replace(",", ".")
+                    );
+                    console.log("PadronForm - Passing initialLng:", {
+                      original: formData.longitud,
+                      parsed,
+                    });
+                    return parsed;
+                  })()
+                : undefined
+            }
+          />
         </div>
       </div>
     </>
