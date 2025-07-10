@@ -78,7 +78,7 @@ namespace sistemaPadronElectoral.Controllers
         // PUT: api/Votantes/5
         [HttpPut("{id}")]
         [Authorize(Roles = "admin_padron")]
-        public async Task<IActionResult> PutVotante(Guid id, [FromForm] VotanteDto votanteDto)
+        public async Task<IActionResult> PutVotante(Guid id, [FromForm] VotanteUpdateDto votanteDto)
         {
             Console.WriteLine($"[LOG] PUT /api/votantes/{{id}} at {DateTime.UtcNow}");
             var votante = await _context.Votante.FindAsync(id);
