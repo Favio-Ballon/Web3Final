@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Seccion } from "../../../models/Seccion";
+import { Seccion } from '../../../models/Seccion';
 import { SeccionService } from "../../../services/SeccionService";
 import { useAuth } from "../../../hooks/useAuth";
 import { FiTrash2, FiLogOut, FiMapPin } from "react-icons/fi";
@@ -62,6 +62,8 @@ export const SeccionForm = () => {
     setErrors({});
   };
 
+  
+
   const validate = (): boolean => {
     const errs: FormErrors = {};
     if (!formData.nombre.trim()) errs.nombre = "Nombre obligatorio";
@@ -86,6 +88,15 @@ export const SeccionForm = () => {
       resetForm();
     } catch (e) {
       console.error("Error creando sección", e);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await new SeccionService().eliminarSeccion(id);
+      setSecciones((prev) => prev.filter((s) => s.id !== id));
+    } catch (e) {
+      console.error("Error eliminando sección", e);
     }
   };
 
@@ -207,8 +218,8 @@ export const SeccionForm = () => {
               <tr>
                 <th className="px-4 py-2 text-left">Nombre</th>
                 <th className="px-4 py-2 text-left">Tipo</th>
-                <th className="px-4 py-2 text-left"># Puntos</th>
-                <th className="px-4 py-2">Acciones</th>
+                <th className="px-4 py-2 text-left">Mapa</th>
+                <th className="px-4 py-2">Eliminar</th>
               </tr>
             </thead>
             <tbody>
@@ -216,14 +227,19 @@ export const SeccionForm = () => {
                 <tr key={s.id} className="border-t">
                   <td className="px-4 py-2">{s.nombre}</td>
                   <td className="px-4 py-2">{s.tipo}</td>
-                  <td className="px-4 py-2">{s.puntos.length}</td>
                   <td className="px-4 py-2 text-center">
                     <button
                       onClick={() => setViewMapPoints(s.puntos)}
-                      className="text-primary hover:underline"
+                      className="px-4 py-2 border border-input rounded hover:bg-muted"
                     >
                       Ver Mapa
                     </button>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => handleDelete(s.id)}
+                      className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
+                    > Eliminar Seccion </button>
                   </td>
                 </tr>
               ))}
@@ -233,8 +249,9 @@ export const SeccionForm = () => {
       </main>
 
       {/* ---------------------------- */}
-      {/* AQUI REEMPLAZAMOS LocationPicker POR MultiPointPicker */}
+      {/* …en tu render de SeccionForm */}
       <MultiPointPicker
+        key={isPickerOpen ? "picker-open" : "picker-closed"}  // <— aquí
         isOpen={isPickerOpen}
         initialPoints={formData.puntos.map((p) => ({
           lat: p.latitud,
@@ -252,6 +269,7 @@ export const SeccionForm = () => {
           setIsPickerOpen(false);
         }}
       />
+
       {/* ---------------------------- */}
 
       {/* Modal de ver ruta (polyline) */}

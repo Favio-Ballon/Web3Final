@@ -55,7 +55,7 @@ export class SeccionService {
     eliminarSeccion(id: number): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             apiClient
-                .delete(`eleccion/secciones/${id}`)
+                .delete(`eleccion/secciones/${id}/`)
                 .then(() => {
                     resolve();
                 })
