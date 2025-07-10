@@ -7,4 +7,5 @@ export const URLS = {
   VOTACION: "/voting",
   VERIFICACION_PADRON: "/verificar-padron",
   NOT_FOUND: "*",
+  SECCIONES: "/secciones",
 };

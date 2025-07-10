@@ -4,6 +4,7 @@ import UsersRoutes from "../pages/gestionUsuarios";
 import VotacionRoutes from "../pages/sistemaVotacion";
 import PadronElectoralRoutes from "../pages/padrónElectoral";
 import AdminElectoralRoutes from "../pages/administracionElectoral";
+import SeccionRoutes from "../pages/administracionElectoral/secciones";
 import { LoginForm } from "../pages/LoginForm";
 import { VerificacionPadron } from "../pages/VerificacionPadron";
 import { ProtectedRoute } from "../components/ProtectedRoute";
@@ -73,6 +74,16 @@ export default function RouterConfig() {
       />
 
       <Route path={URLS.NOT_FOUND} element={<div>Página no encontrada</div>} />
+
+      <Route  
+        path={`${URLS.SECCIONES}/*`}
+        element={
+          <ProtectedRoute requiredRoles={["admin_elecciones"]}>
+            <SeccionRoutes />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
+    
   );
 }
