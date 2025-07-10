@@ -12,16 +12,16 @@ namespace SistemaPadronElectoral.Models
         public string Nombre { get; set; }
         public string Apellido { get; set; }
         public string Direccion { get; set; }
-        public string Foto { get; set; }
-        public string CiReverso { get; set; }
-        public string CiAnverso { get; set; }
+        public string Foto { get; set; } = null!;
+        public string CiReverso { get; set; } = null!;
+        public string CiAnverso { get; set; } = null!;
         public DateOnly FechaNacimiento { get; set; }
         public decimal Latitud { get; set; }
 
-        public decimal Longitud { get; set; }
-        public string Departamento { get; set; }
-        public string Ciudad { get; set; }
-        public string Provincia { get; set; }
+        public decimal Longitud { get; set; } = 0;
+        public string Departamento { get; set; } = null!;
+        public string Ciudad { get; set; } = null!;
+        public string Provincia { get; set; } = null!;
 
         public Votante()
         {
