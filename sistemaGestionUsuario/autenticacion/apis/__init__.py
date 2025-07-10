@@ -1,2 +1,0 @@
-from .user_viewset import UserViewSet
-from .token_serializer import CustomTokenObtainPairView
