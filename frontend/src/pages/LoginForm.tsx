@@ -160,13 +160,6 @@ export const LoginForm = () => {
             {isLoading ? "Logging in..." : "Login"}
           </button>
 
-          <p className="text-sm text-center text-accent">
-            No tienes una cuenta?{" "}
-            <a href="/register" className="text-primary hover:underline">
-              Registrate
-            </a>
-          </p>
-
           {/* Enlace para verificación pública del padrón */}
           <div className="mt-4 pt-4 border-t border-border">
             <p className="text-sm text-center text-muted-foreground mb-2">
