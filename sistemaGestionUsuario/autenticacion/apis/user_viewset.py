@@ -27,6 +27,16 @@ class UserViewSet(viewsets.ViewSet):
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
+    @action(methods=['get'], detail=False, url_path='jurados')
+    def get_jurados(self, request):
+        if not request.user.rol == 'admin_elecciones':
+            return Response({'error': 'No tienes permiso para ver los jurados'}, status=403)
+
+        jurados = CustomUser.objects.filter(rol='jurado')
+        serializer = UserSerializer(jurados, many=True)
+        return Response(serializer.data)
+
+
     # now to create a user
     @action(methods=['post'], detail=False, url_path='create')
     def create_user(self, request):
