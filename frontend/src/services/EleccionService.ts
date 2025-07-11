@@ -142,4 +142,30 @@ export class EleccionService {
         });
     });
   }
+
+  distribuirMesas(
+    seccionId: number,
+    votantes: any[]
+  ): Promise<Mesa[]> {
+    return new Promise<Mesa[]>((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("seccionId", seccionId.toString());
+      formData.append("votantes", JSON.stringify(votantes));
+
+      apiClient
+        .post("eleccion/mesas/distribuir/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((error) => {
+          console.error("Error in distribuirMesas:", error);
+          reject(new Error("Error al distribuir mesas: " + error.message));
+        });
+    });
+  }
+
 }

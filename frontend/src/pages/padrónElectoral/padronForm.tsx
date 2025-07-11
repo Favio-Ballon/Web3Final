@@ -10,6 +10,7 @@ import { FiPlus, FiEdit2, FiTrash2, FiLogOut, FiMapPin } from "react-icons/fi";
 import { RecintoLocationPicker } from "../../components/RecintoLocationPicker";
 import { RecintoService } from "../../services/RecintoService";
 import { Recinto } from "../../models/Recinto";
+import { EleccionService } from "../../services/EleccionService";
 
 interface FormData {
   ci: string;
@@ -206,6 +207,10 @@ export const PadronForm = () => {
 
         await new PadronService().createVotante(votanteData);
         getVotantes();
+        // await new EleccionService().distribuirMesas( 
+        //   parseInt(recintoSeleccionado?.seccion.id),
+        //   parseInt(votantes)
+        // );
         setIsCreateModalOpen(false);
         setFormData({
           ci: "",
@@ -219,6 +224,7 @@ export const PadronForm = () => {
           ciudad: "",
           provincia: "",
         });
+
       } catch (error) {
         console.error("Error al crear votante:", error);
       }
