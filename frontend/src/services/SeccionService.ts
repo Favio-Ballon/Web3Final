@@ -65,4 +65,17 @@ export class SeccionService {
                 });
         });
     }
+    getSeccionById(id: number): Promise<Seccion> {
+        return new Promise<Seccion>((resolve, reject) => {
+            apiClient
+                .get(`eleccion/secciones/${id}/`)
+                .then((response) => {
+                    resolve(response.data);
+                })
+                .catch((error) => {
+                    console.error("Error in getSeccionById:", error);
+                    reject(new Error("Error al obtener la sección: " + error.message));
+                });
+        });
+    }
 }

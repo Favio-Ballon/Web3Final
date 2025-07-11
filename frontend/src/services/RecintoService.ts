@@ -22,7 +22,7 @@ export class RecintoService {
             formData.append("nombre", recinto.nombre);
             formData.append("latitud", recinto.latitud.toString());
             formData.append("longitud", recinto.longitud.toString());
-            formData.append("seccion", recinto.seccion.toString());
+            formData.append("seccion_id", recinto.seccion.toString());
 
             apiClient
                 .post("eleccion/recintos/", formData, {
@@ -45,7 +45,7 @@ export class RecintoService {
             formData.append("nombre", recinto.nombre);
             formData.append("latitud", recinto.latitud.toString());
             formData.append("longitud", recinto.longitud.toString());
-            formData.append("seccion", recinto.seccion.toString());
+            formData.append("seccion_id", recinto.seccion.toString());
 
             apiClient
                 .put(`eleccion/recintos/${recinto.id}/`, formData, {

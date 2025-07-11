@@ -9,6 +9,7 @@ import { LoginForm } from "../pages/LoginForm";
 import { VerificacionPadron } from "../pages/VerificacionPadron";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import RecintoRoutes from "../pages/administracionElectoral/recintos";
+import EleccionesRoutes from "../pages/administracionElectoral/elecciones";
 
 export default function RouterConfig() {
   return (
@@ -88,7 +89,7 @@ export default function RouterConfig() {
         path={`${URLS.ELECCIONES}/*`}
         element={
           <ProtectedRoute requiredRoles={["admin_elecciones"]}>
-            <AdminElectoralRoutes />
+            <EleccionesRoutes />
           </ProtectedRoute>
         }
       />
