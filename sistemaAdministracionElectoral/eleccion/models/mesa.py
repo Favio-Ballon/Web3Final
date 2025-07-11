@@ -8,7 +8,7 @@ class Mesa(models.Model):
         'eleccion.Recinto', on_delete=models.CASCADE, related_name='mesas'
     )
     eleccion = models.ForeignKey(
-        'eleccion.Eleccion', on_delete=models.CASCADE, related_name='mesas'
+        'eleccion.Eleccion', on_delete=models.CASCADE, related_name='mesas', null=True
     )
 
     class Meta:

@@ -24,3 +24,4 @@ class EleccionViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     queryset = Eleccion.objects.all()
     serializer_class = EleccionSerializer
+

@@ -131,3 +131,93 @@ class MesaViewSet(viewsets.ModelViewSet):
         # devolver las mesas creadas
         data = MesaSerializer(mesas_creadas, many=True).data
         return Response(data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['post'], url_path='crear-mesas')
+    def crear_mesas(self, request):
+        # se espera un payload con recinto_id y cantidad_mesas
+        recinto_id = request.data.get('recinto_id')
+        try:
+            cantidad_mesas = int(request.data.get('cantidad_mesas'))
+        except (TypeError, ValueError):
+            return Response(
+                {"error": "cantidad_mesas debe ser un número válido"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not recinto_id or cantidad_mesas is None:
+            return Response(
+                {"error": "Debe enviar 'recinto_id' y 'cantidad_mesas'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            recinto = Recinto.objects.get(pk=recinto_id)
+        except Recinto.DoesNotExist:
+            return Response(
+                {"error": "Recinto no encontrado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        if cantidad_mesas < 1:
+            return Response(
+                {"error": "Debe haber al menos una mesa."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        mesas_creadas = []
+        for num in range(1, cantidad_mesas + 1):
+            mesa = Mesa.objects.create(
+                recinto=recinto,
+                numero=num,
+                cantidad=0,  # inicialmente sin votantes
+                eleccion=None  # se puede asignar después
+            )
+            mesas_creadas.append(mesa)
+        data = MesaSerializer(mesas_creadas, many=True).data
+        return Response(data, status=status.HTTP_201_CREATED)
+
+    # get mesas por recinto
+    @action(detail=False, methods=['get'], url_path='recinto/(?P<recinto_id>[^/.]+)')
+    def get_mesas_por_recinto(self, request, recinto_id=None):
+        if not recinto_id:
+            return Response(
+                {"error": "Debe enviar 'recinto_id'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            recinto = Recinto.objects.get(pk=recinto_id)
+        except Recinto.DoesNotExist:
+            return Response(
+                {"error": "Recinto no encontrado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        mesas = Mesa.objects.filter(recinto=recinto)
+        serializer = self.get_serializer(mesas, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['post'], url_path='asignar-jurado')
+    def asignar_jurado(self, request):
+        # payload esperado:mesaId, jefeId
+        mesa_id = request.data.get('mesaId')
+        jefe_id = request.data.get('jefeId')
+        if not mesa_id or not jefe_id:
+            return Response(
+                {"error": "Debe enviar 'mesaId' y 'jefeId'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            mesa = Mesa.objects.get(pk=mesa_id)
+        except Mesa.DoesNotExist:
+            return Response(
+                {"error": "Mesa no encontrada."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        try:
+            mesa.jefe_id = jefe_id
+            mesa.save(update_fields=['jefe_id'])
+            return Response(
+                {"message": "Jefe de mesa asignado correctamente."},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Error al asignar jefe de mesa: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
