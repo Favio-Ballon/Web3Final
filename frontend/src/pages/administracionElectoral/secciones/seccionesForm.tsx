@@ -238,10 +238,8 @@ export const SeccionForm = () => {
         </div>
       </main>
 
-      {/* ---------------------------- */}
-      {/* …en tu render de SeccionForm */}
       <MultiPointPicker
-        key={isPickerOpen ? "picker-open" : "picker-closed"}  // <— aquí
+        key={isPickerOpen ? "picker-open" : "picker-closed"}
         isOpen={isPickerOpen}
         initialPoints={formData.puntos.map((p) => ({
           lat: p.latitud,

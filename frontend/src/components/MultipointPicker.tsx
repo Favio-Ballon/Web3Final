@@ -12,12 +12,11 @@ const containerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: -17.819308, lng: -63.183015 };
 
 export const MultiPointPicker: React.FC<MultiPointPickerProps> = ({
-  isOpen,
-  initialPoints = [],
-  onClose,
-  onSave,
-}) => {
-  // Carga la API una sola vez sin id ni libraries extra
+    isOpen,
+    initialPoints = [],
+    onClose,
+    onSave,
+  }) => {
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
   });
