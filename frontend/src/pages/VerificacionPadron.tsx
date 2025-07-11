@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { VotantePublic } from "../models/Votante";
 import { PadronService } from "../services/PadronService";
@@ -12,6 +12,7 @@ import {
   FiXCircle,
   FiHome,
 } from "react-icons/fi";
+import { RecintoService } from "../services/RecintoService";
 
 interface VerificationState {
   isLoading: boolean;
@@ -28,6 +29,37 @@ export const VerificacionPadron = () => {
     error: null,
     searched: false,
   });
+
+  const getRecintoById = async (id) => {
+    if (!verification.votante?.recinto) {
+      return;
+    }
+    try {
+      const recinto = await new RecintoService().getRecintoById(id);
+      if (recinto) {
+        setVerification((prev) => ({
+          ...prev,
+          votante: {
+            ...prev.votante!,
+            recintoNombre: recinto.nombre,
+          },
+        }));
+      }
+    } catch (error) {
+      console.error("Error al obtener recinto:", error);
+      setVerification((prev) => ({
+        ...prev,
+        votante: {
+          ...prev.votante!,
+          recintoNombre: "Recinto no encontrado",
+        },
+      }));
+    }
+  };
+
+  useEffect(() => {
+    getRecintoById(verification.votante?.recinto);
+  }, [verification.votante?.recinto]);
 
   const handleSearch = async () => {
     if (!ci.trim()) {
@@ -66,6 +98,7 @@ export const VerificacionPadron = () => {
         error: null,
         searched: true,
       });
+      console.log("Votante encontrado:", votante);
     } catch (error) {
       console.error("Error al verificar CI:", error);
       setVerification({
@@ -272,26 +305,27 @@ export const VerificacionPadron = () => {
                     <div className="space-y-3">
                       <div>
                         <span className="text-sm font-medium text-muted-foreground">
-                          Departamento:
+                          Seccion:
                         </span>
                         <p className="text-foreground">
-                          {verification.votante.departamento}
+                          {verification.votante.departamento
+                            ? verification.votante.departamento
+                            : ""}
+                          {verification.votante.ciudad
+                            ? verification.votante.ciudad
+                            : ""}
+                          {verification.votante.provincia
+                            ? verification.votante.provincia
+                            : ""}
                         </p>
                       </div>
                       <div>
                         <span className="text-sm font-medium text-muted-foreground">
-                          Ciudad:
+                          Recinto:
                         </span>
                         <p className="text-foreground">
-                          {verification.votante.ciudad}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-sm font-medium text-muted-foreground">
-                          Provincia:
-                        </span>
-                        <p className="text-foreground">
-                          {verification.votante.provincia}
+                          {verification.votante.recintoNombre ||
+                            "No disponible"}
                         </p>
                       </div>
                     </div>

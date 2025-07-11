@@ -7,7 +7,9 @@ import {
 import { PadronService } from "../../services/PadronService";
 import { useAuth } from "../../hooks/useAuth";
 import { FiPlus, FiEdit2, FiTrash2, FiLogOut, FiMapPin } from "react-icons/fi";
-import { LocationPicker } from "../../components/LocationPicker";
+import { RecintoLocationPicker } from "../../components/RecintoLocationPicker";
+import { RecintoService } from "../../services/RecintoService";
+import { Recinto } from "../../models/Recinto";
 
 interface FormData {
   ci: string;
@@ -39,6 +41,7 @@ interface FormErrors {
   foto?: string;
   ciReverso?: string;
   ciAnverso?: string;
+  recinto?: string; // Error for recinto selection
 }
 
 // Header temporal
@@ -72,7 +75,6 @@ export const PadronForm = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [currentVotanteId, setCurrentVotanteId] = useState<number | null>(null);
   const [formData, setFormData] = useState<FormData>({
     ci: "",
@@ -87,6 +89,11 @@ export const PadronForm = () => {
     provincia: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [recintos, setRecintos] = useState<Recinto[]>([]);
+  const [recintoSeleccionado, setRecintoSeleccionado] =
+    useState<Recinto | null>(null);
+  const [isRecintoLocationPickerOpen, setIsRecintoLocationPickerOpen] =
+    useState(false);
 
   const getVotantes = async () => {
     try {
@@ -101,8 +108,20 @@ export const PadronForm = () => {
     }
   };
 
+  const getRecintos = async () => {
+    try {
+      const data = await new RecintoService().getRecintos();
+      console.log("Recintos obtenidos:", data);
+      setRecintos(data || []); // Ensure we always set an array
+    } catch (error) {
+      console.error("Error al obtener los recintos:", error);
+      setRecintos([]); // Set empty array on error
+    }
+  };
+
   useEffect(() => {
     getVotantes();
+    getRecintos();
   }, []);
 
   const validateForm = (): boolean => {
@@ -133,10 +152,9 @@ export const PadronForm = () => {
       }
     }
 
-    if (!formData.departamento)
-      newErrors.departamento = "Departamento obligatorio";
-    if (!formData.ciudad) newErrors.ciudad = "Ciudad obligatoria";
-    if (!formData.provincia) newErrors.provincia = "Provincia obligatoria";
+    if (!recintoSeleccionado) {
+      newErrors.recinto = "Recinto obligatorio";
+    }
 
     if (isCreateModalOpen) {
       if (!formData.foto) newErrors.foto = "Foto obligatoria";
@@ -149,44 +167,42 @@ export const PadronForm = () => {
   };
 
   const handleCreate = async () => {
+    console.log(recintoSeleccionado);
     if (validateForm()) {
       try {
-        // Parse and validate coordinates (convert comma to dot for parseFloat)
-        const latStr = formData.latitud.replace(/,/g, ".");
-        const lngStr = formData.longitud.replace(/,/g, ".");
-        const latitud = parseFloat(latStr);
-        const longitud = parseFloat(lngStr);
-
-        // Additional validation
-        if (isNaN(latitud) || latitud < -90 || latitud > 90) {
-          alert("Latitud inválida. Debe estar entre -90 y 90.");
-          return;
-        }
-        if (isNaN(longitud) || longitud < -180 || longitud > 180) {
-          alert("Longitud inválida. Debe estar entre -180 y 180.");
-          return;
-        }
-
-        console.log("PadronForm - Creating voter with coordinates:", {
-          latitud,
-          longitud,
-        });
-
         const votanteData: VotanteCreateRequest = {
           ci: parseInt(formData.ci),
           nombre: formData.nombre,
           apellido: formData.apellido,
           direccion: formData.direccion,
           fechaNacimiento: formData.fechaNacimiento,
-          latitud: latitud,
-          longitud: longitud,
-          departamento: formData.departamento,
-          ciudad: formData.ciudad,
-          provincia: formData.provincia,
+          latitud: 0,
+          longitud: 0,
+          departamento:
+            recintoSeleccionado &&
+            typeof recintoSeleccionado.seccion === "object" &&
+            recintoSeleccionado.seccion.tipo === "Departamento"
+              ? recintoSeleccionado.seccion.nombre
+              : formData.departamento,
+          ciudad:
+            recintoSeleccionado &&
+            typeof recintoSeleccionado.seccion === "object" &&
+            recintoSeleccionado.seccion.tipo === "Ciudadana"
+              ? recintoSeleccionado.seccion.nombre
+              : formData.ciudad,
+          provincia:
+            recintoSeleccionado &&
+            typeof recintoSeleccionado.seccion === "object" &&
+            recintoSeleccionado.seccion.tipo === "Provincial"
+              ? recintoSeleccionado.seccion.nombre
+              : formData.provincia,
           foto: formData.foto!,
           ciReverso: formData.ciReverso!,
           ciAnverso: formData.ciAnverso!,
+          recinto: recintoSeleccionado?.id?.toString() || "", // Ensure recinto is a string
         };
+
+        console.log("PadronForm - Creating voter with data:", votanteData);
 
         await new PadronService().createVotante(votanteData);
         getVotantes();
@@ -241,9 +257,25 @@ export const PadronForm = () => {
           fechaNacimiento: formData.fechaNacimiento,
           latitud: latitud,
           longitud: longitud,
-          departamento: formData.departamento,
-          ciudad: formData.ciudad,
-          provincia: formData.provincia,
+          recinto: recintoSeleccionado?.id?.toString() || "",
+          departamento:
+            recintoSeleccionado &&
+            typeof recintoSeleccionado.seccion === "object" &&
+            recintoSeleccionado.seccion.tipo === "Departamento"
+              ? recintoSeleccionado.seccion.nombre
+              : formData.departamento,
+          ciudad:
+            recintoSeleccionado &&
+            typeof recintoSeleccionado.seccion === "object" &&
+            recintoSeleccionado.seccion.tipo === "Ciudadana"
+              ? recintoSeleccionado.seccion.nombre
+              : formData.ciudad,
+          provincia:
+            recintoSeleccionado &&
+            typeof recintoSeleccionado.seccion === "object" &&
+            recintoSeleccionado.seccion.tipo === "Provincial"
+              ? recintoSeleccionado.seccion.nombre
+              : formData.provincia,
           // Only include images if they are present
           ...(formData.foto && { foto: formData.foto }),
           ...(formData.ciReverso && { ciReverso: formData.ciReverso }),
@@ -289,6 +321,48 @@ export const PadronForm = () => {
       latitud: latStr,
       longitud: lngStr,
     });
+    setRecintoSeleccionado(null); // Clear recinto selection when selecting custom location
+  };
+
+  const handleRecintoSelect = (recinto: Recinto) => {
+    console.log("PadronForm - Recinto seleccionado:", recinto);
+
+    // Set the coordinates from the selected recinto
+    const latStr = recinto.latitud.toFixed(6).replace(".", ",");
+    const lngStr = recinto.longitud.toFixed(6).replace(".", ",");
+
+    // Determine which fields to update based on seccion tipo
+    let departamento = formData.departamento;
+    let ciudad = formData.ciudad;
+    let provincia = formData.provincia;
+
+    if (typeof recinto.seccion === "object" && recinto.seccion) {
+      switch (recinto.seccion.tipo) {
+        case "Departamento":
+          departamento = recinto.seccion.nombre;
+          ciudad = " "; // Clear other fields
+          provincia = " ";
+          break;
+        case "Ciudadana":
+          ciudad = recinto.seccion.nombre;
+          departamento = " "; // Clear other fields
+          provincia = " ";
+          break;
+        case "Provincial":
+          provincia = recinto.seccion.nombre;
+          departamento = " "; // Clear other fields
+          ciudad = " ";
+          break;
+      }
+    }
+
+    setFormData({
+      ...formData,
+      latitud: latStr,
+      longitud: lngStr,
+    });
+
+    setRecintoSeleccionado(recinto);
   };
 
   const handleDelete = async () => {
@@ -338,7 +412,7 @@ export const PadronForm = () => {
                     Dirección
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-heading text-foreground">
-                    Departamento
+                    Seccion
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-heading text-foreground">
                     Acciones
@@ -375,7 +449,9 @@ export const PadronForm = () => {
                       </td>
                       <td className="px-6 py-4 text-sm text-foreground">
                         <span className="inline-block bg-muted px-2 py-1 rounded-full text-xs">
-                          {votante.departamento}
+                          {votante.departamento ? votante.departamento : ""}
+                          {votante.ciudad ? votante.ciudad : ""}
+                          {votante.provincia ? votante.provincia : ""}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm space-x-2">
@@ -530,153 +606,42 @@ export const PadronForm = () => {
                     <label className="block text-sm font-medium mb-2">
                       Ubicación Geográfica
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                      {/* Latitud */}
-                      <div>
-                        <input
-                          type="number"
-                          step="any"
-                          min="-90"
-                          max="90"
-                          placeholder="Latitud (-90 a 90)"
-                          value={formData.latitud}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            const numValue = parseFloat(value);
-                            // Solo actualizar si el valor está en rango válido o está vacío
-                            if (
-                              value === "" ||
-                              (!isNaN(numValue) &&
-                                numValue >= -90 &&
-                                numValue <= 90)
-                            ) {
-                              setFormData({
-                                ...formData,
-                                latitud: value,
-                              });
-                            }
-                          }}
-                          className="w-full border border-input rounded-sm p-2"
-                        />
-                        {errors.latitud && (
-                          <p className="text-destructive text-sm">
-                            {errors.latitud}
-                          </p>
-                        )}
-                      </div>
 
-                      {/* Longitud */}
-                      <div>
-                        <input
-                          type="number"
-                          step="any"
-                          min="-180"
-                          max="180"
-                          placeholder="Longitud (-180 a 180)"
-                          value={formData.longitud}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            const numValue = parseFloat(value);
-                            // Solo actualizar si el valor está en rango válido o está vacío
-                            if (
-                              value === "" ||
-                              (!isNaN(numValue) &&
-                                numValue >= -180 &&
-                                numValue <= 180)
-                            ) {
-                              setFormData({
-                                ...formData,
-                                longitud: value,
-                              });
-                            }
-                          }}
-                          className="w-full border border-input rounded-sm p-2"
-                        />
-                        {errors.longitud && (
-                          <p className="text-destructive text-sm">
-                            {errors.longitud}
-                          </p>
-                        )}
+                    {/* Show selected recinto info if any */}
+                    {recintoSeleccionado && (
+                      <div className="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-sm">
+                        <p className="text-sm text-blue-800">
+                          <strong>Recinto seleccionado:</strong>{" "}
+                          {recintoSeleccionado.nombre}
+                          {` (Sección: ${
+                            typeof recintoSeleccionado.seccion === "object" &&
+                            recintoSeleccionado.seccion !== null
+                              ? recintoSeleccionado.seccion.nombre
+                              : recintoSeleccionado.seccion
+                          })`}
+                        </p>
                       </div>
+                    )}
 
-                      {/* Botón del mapa */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                      {/* Botón del mapa con recintos */}
                       <div>
                         <button
                           type="button"
                           onClick={() => {
                             console.log(
-                              "PadronForm - Opening LocationPicker with coordinates:",
-                              {
-                                latitud: formData.latitud,
-                                longitud: formData.longitud,
-                              }
+                              "PadronForm - Opening RecintoLocationPicker with recintos:",
+                              recintos
                             );
-                            setIsLocationPickerOpen(true);
+                            setIsRecintoLocationPickerOpen(true);
                           }}
-                          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-secondary text-secondary-foreground border border-input rounded-sm hover:bg-secondary/80"
+                          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-primary text-primary-foreground border border-input rounded-sm hover:bg-primary/90"
                         >
                           <FiMapPin size={16} />
-                          Seleccionar en Mapa
+                          Ver Recintos
                         </button>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Departamento */}
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Departamento"
-                      value={formData.departamento}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          departamento: e.target.value,
-                        })
-                      }
-                      className="w-full border border-input rounded-sm p-2"
-                    />
-                    {errors.departamento && (
-                      <p className="text-destructive text-sm">
-                        {errors.departamento}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Ciudad */}
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Ciudad"
-                      value={formData.ciudad}
-                      onChange={(e) =>
-                        setFormData({ ...formData, ciudad: e.target.value })
-                      }
-                      className="w-full border border-input rounded-sm p-2"
-                    />
-                    {errors.ciudad && (
-                      <p className="text-destructive text-sm">
-                        {errors.ciudad}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Provincia */}
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Provincia"
-                      value={formData.provincia}
-                      onChange={(e) =>
-                        setFormData({ ...formData, provincia: e.target.value })
-                      }
-                      className="w-full border border-input rounded-sm p-2"
-                    />
-                    {errors.provincia && (
-                      <p className="text-destructive text-sm">
-                        {errors.provincia}
-                      </p>
-                    )}
                   </div>
 
                   {/* Foto */}
@@ -806,24 +771,32 @@ export const PadronForm = () => {
             </div>
           )}
 
-          {/* Location Picker Modal */}
-          <LocationPicker
-            isOpen={isLocationPickerOpen}
+          {/* Recinto Location Picker Modal */}
+          <RecintoLocationPicker
+            isOpen={isRecintoLocationPickerOpen}
             onClose={() => {
-              console.log("PadronForm - Closing LocationPicker");
-              setIsLocationPickerOpen(false);
+              console.log("PadronForm - Closing RecintoLocationPicker");
+              setIsRecintoLocationPickerOpen(false);
             }}
             onLocationSelect={handleLocationSelect}
+            onRecintoSelect={handleRecintoSelect}
+            recintos={(() => {
+              console.log(
+                "PadronForm - Pasando recintos al RecintoLocationPicker:",
+                {
+                  count: recintos.length,
+                  data: recintos,
+                }
+              );
+              return recintos;
+            })()}
+            selectedRecinto={recintoSeleccionado}
             initialLat={
               formData.latitud
                 ? (() => {
                     const parsed = parseFloat(
                       formData.latitud.replace(",", ".")
                     );
-                    console.log("PadronForm - Passing initialLat:", {
-                      original: formData.latitud,
-                      parsed,
-                    });
                     return parsed;
                   })()
                 : undefined
@@ -834,10 +807,6 @@ export const PadronForm = () => {
                     const parsed = parseFloat(
                       formData.longitud.replace(",", ".")
                     );
-                    console.log("PadronForm - Passing initialLng:", {
-                      original: formData.longitud,
-                      parsed,
-                    });
                     return parsed;
                   })()
                 : undefined

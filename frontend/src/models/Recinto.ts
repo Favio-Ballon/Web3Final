@@ -1,10 +1,9 @@
+import { Seccion } from "./Seccion";
 
 export interface Recinto {
- 
   id?: number;
   nombre: string;
   latitud: number;
   longitud: number;
-  seccion: number;         // aquí solo el ID de sección
+  seccion: number | Seccion; // can be either ID or full object
 }
-

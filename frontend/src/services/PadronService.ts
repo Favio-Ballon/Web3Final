@@ -47,6 +47,7 @@ export class PadronService {
       formData.append("apellido", votante.apellido);
       formData.append("direccion", votante.direccion);
       formData.append("fechaNacimiento", votante.fechaNacimiento);
+      formData.append("recinto", votante.recinto || ""); // Ensure recinto is a string
 
       // Ensure coordinates are formatted with comma as decimal separator
       const latitudStr = formatCoordinate(votante.latitud);

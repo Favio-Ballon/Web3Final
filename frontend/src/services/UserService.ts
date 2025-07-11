@@ -18,6 +18,21 @@ export class UserService {
     });
   }
 
+  getJurados(): Promise<Array<User>> {
+    return new Promise<Array<User>>((resolve, reject) => {
+      apiClient
+        .get("usuario/info/jurados/")
+        .then((response) => {
+          const data = response.data?.results || response.data || [];
+          resolve(Array.isArray(data) ? data : []);
+        })
+        .catch((error) => {
+          console.error("Error in getJurados:", error);
+          reject(new Error("Error al obtener los jurados: " + error.message));
+        });
+    });
+  }
+
   createUser(user: User): Promise<User> {
     return new Promise<User>((resolve, reject) => {
       apiClient

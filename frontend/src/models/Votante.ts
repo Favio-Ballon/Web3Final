@@ -17,6 +17,8 @@ export interface Votante {
 
 // Interface para la consulta pública del padrón (sin datos sensibles)
 export interface VotantePublic {
+  recinto: string;
+  recintoNombre: string;
   codigo: number;
   ci: number;
   nombre: string;
@@ -41,6 +43,7 @@ export interface VotanteCreateRequest {
   departamento: string;
   ciudad: string;
   provincia: string;
+  recinto: string; // ID del recinto asociado
 }
 
 export interface VotanteUpdateRequest {
@@ -57,4 +60,5 @@ export interface VotanteUpdateRequest {
   departamento: string;
   ciudad: string;
   provincia: string;
+  recinto: string; // ID del recinto asociado
 }

@@ -11,7 +11,7 @@ import { ProtectedRoute } from "../components/ProtectedRoute";
 import RecintoRoutes from "../pages/administracionElectoral/recintos";
 import EleccionesRoutes from "../pages/administracionElectoral/elecciones";
 import CargosRoutes from "../pages/administracionElectoral/cargos";
-import CandidaturaRoutes from "../pages/padrónElectoral";
+import CandidaturaRoutes from "../pages/administracionElectoral/candidatura";
 
 export default function RouterConfig() {
   return (
@@ -72,14 +72,14 @@ export default function RouterConfig() {
         path={`${URLS.VOTACION}/*`}
         element={
           // <ProtectedRoute requiredRoles={["jurado"]}>
-            <VotacionRoutes />
+          <VotacionRoutes />
           // </ProtectedRoute>
         }
       />
 
       <Route path={URLS.NOT_FOUND} element={<div>Página no encontrada</div>} />
 
-      <Route  
+      <Route
         path={`${URLS.SECCIONES}/*`}
         element={
           <ProtectedRoute requiredRoles={["admin_elecciones"]}>
@@ -120,6 +120,5 @@ export default function RouterConfig() {
         }
       />
     </Routes>
-    
   );
 }
