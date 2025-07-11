@@ -62,14 +62,16 @@ namespace sistemaPadronElectoral.Controllers
                 return NotFound();
             }
 
-            string recinto = "Recinto asignado";
             var dto = new VotanteEstadoPadronDto
             {
                 Ci = votante.Ci,
                 Nombre = votante.Nombre,
                 Apellido = votante.Apellido,
                 FechaNacimiento = votante.FechaNacimiento,
-                Recinto = recinto
+                Recinto = votante.Recinto.ToString(),
+                Departamento = votante.Departamento,
+                Ciudad = votante.Ciudad,
+                Provincia = votante.Provincia
             };
 
             return dto;
@@ -166,10 +168,17 @@ namespace sistemaPadronElectoral.Controllers
                 FechaNacimiento = votanteDto.FechaNacimiento,
                 Latitud = votanteDto.Latitud,
                 Longitud = votanteDto.Longitud,
-                Departamento = votanteDto.Departamento,
-                Ciudad = votanteDto.Ciudad,
-                Provincia = votanteDto.Provincia
+                Departamento = votanteDto.Departamento ?? " ",
+                Ciudad = votanteDto.Ciudad ?? " ",
+                Provincia = votanteDto.Provincia ?? " ",
+                Recinto = votanteDto.Recinto
             };
+
+
+
+            //console. votante y votanteDto
+            Console.WriteLine($"[LOG] Votante: {votante.Recinto},|| {votanteDto.Recinto}");
+
 
             if (votanteDto.Foto != null)
             {

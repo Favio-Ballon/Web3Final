@@ -19,10 +19,10 @@ namespace SistemaPadronElectoral.Models
         public decimal Latitud { get; set; }
 
         public decimal Longitud { get; set; } = 0;
-        public string Departamento { get; set; } = null!;
-        public string Ciudad { get; set; } = null!;
-        public string Provincia { get; set; } = null!;
-
+        public string Departamento { get; set; } = " ";
+        public string Ciudad { get; set; } = " ";
+        public string Provincia { get; set; } = " ";
+        public int Recinto { get; set; } = 0;
         public Votante()
         {
             Codigo = Guid.NewGuid();

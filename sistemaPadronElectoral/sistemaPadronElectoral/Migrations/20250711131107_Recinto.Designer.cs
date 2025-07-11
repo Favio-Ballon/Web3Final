@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SistemaPadronElectoral.data;
 
@@ -11,9 +12,11 @@ using SistemaPadronElectoral.data;
 namespace sistemaPadronElectoral.Migrations
 {
     [DbContext(typeof(SistemaPadronElectoralContext))]
-    partial class SistemaPadronElectoralContextModelSnapshot : ModelSnapshot
+    [Migration("20250711131107_Recinto")]
+    partial class Recinto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
