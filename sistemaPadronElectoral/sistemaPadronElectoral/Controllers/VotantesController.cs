@@ -205,6 +205,37 @@ namespace sistemaPadronElectoral.Controllers
             return CreatedAtAction("GetVotante", new { id = votante.Codigo }, votante);
         }
 
+        // POST: api/Votantes/filtrar-ubicacion
+        [HttpPost("filtrar-ubicacion")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Votante>>> FiltrarPorUbicacion([FromBody] VotanteFiltroUbicacionDto filtro)
+        {
+            if (filtro == null)
+                return BadRequest("Debe enviar al menos un filtro.");
+
+            IQueryable<Votante> query = _context.Votante.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filtro.Departamento))
+            {
+                query = query.Where(v => v.Departamento == filtro.Departamento);
+            }
+            else if (!string.IsNullOrWhiteSpace(filtro.Ciudad))
+            {
+                query = query.Where(v => v.Ciudad == filtro.Ciudad);
+            }
+            else if (!string.IsNullOrWhiteSpace(filtro.Provincia))
+            {
+                query = query.Where(v => v.Provincia == filtro.Provincia);
+            }
+            else
+            {
+                return BadRequest("Debe enviar al menos un filtro válido: Departamento, Ciudad o Provincia.");
+            }
+
+            var resultado = await query.ToListAsync();
+            return Ok(resultado);
+        }
+
         // DELETE: api/Votantes/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin_padron")]

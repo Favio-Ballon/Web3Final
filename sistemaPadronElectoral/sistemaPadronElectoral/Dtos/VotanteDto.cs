@@ -70,4 +70,11 @@ namespace sistemaPadronElectoral.Dtos
         public string Provincia { get; set; }
         public string Recinto { get; set; } // Recinto electoral
     }
+
+    public class VotanteFiltroUbicacionDto
+    {
+        public string? Departamento { get; set; }
+        public string? Ciudad { get; set; }
+        public string? Provincia { get; set; }
+    }
 }
