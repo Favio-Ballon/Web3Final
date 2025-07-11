@@ -5,8 +5,8 @@ import { useAuth } from "../../../hooks/useAuth";
 import { FiTrash2, FiLogOut, FiMapPin } from "react-icons/fi";
 import {
   GoogleMap,
-  Marker,
-  Polyline,
+  MarkerF,
+  PolylineF,
   useJsApiLoader,
 } from "@react-google-maps/api";
 
@@ -270,49 +270,53 @@ export const SeccionForm = () => {
         }}
       />
 
-      {/* ---------------------------- */}
-
-      {/* Modal de ver ruta (polyline) */}
       {viewMapPoints && isLoaded && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div className="bg-card p-4 rounded max-w-2xl w-full max-h-[90vh] overflow-auto">
-      <h2 className="text-lg font-semibold mb-2">Ruta de la Sección</h2>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="bg-card p-4 rounded max-w-2xl w-full max-h-[90vh] overflow-auto">
+          <h2 className="text-lg font-semibold mb-2">Ruta de la Sección</h2>
 
-      <GoogleMap
-        mapContainerStyle={{ width: "100%", height: "400px" }}
-        center={{
-          lat: viewMapPoints[0].latitud,
-          lng: viewMapPoints[0].longitud,
-        }}
-        zoom={13}
-        options={{ streetViewControl: false, mapTypeControl: true }}
-      >
-        <Polyline
-          path={viewMapPoints.map(p => ({
-            lat: p.latitud,
-            lng: p.longitud,
-          }))}
-          options={{ strokeColor: "#3b82f6", strokeWeight: 4 }}
-        />
-        {viewMapPoints.map((p, i) => (
-          <Marker
-            key={i}
-            position={{ lat: p.latitud, lng: p.longitud }}
-          />
-        ))}
-      </GoogleMap>
+          <GoogleMap
+            mapContainerStyle={{ width: "100%", height: "400px" }}
+            center={{
+              lat: viewMapPoints[0].latitud,
+              lng: viewMapPoints[0].longitud,
+            }}
+            zoom={13}
+            options={{ streetViewControl: false, mapTypeControl: true }}
+          >
+            {(() => {
+              const path = viewMapPoints.map(p => ({
+                lat: p.latitud,
+                lng: p.longitud,
+              }));
+              const closedPath = [...path, path[0]];
 
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={() => setViewMapPoints(null)}
-          className="px-4 py-2 border rounded hover:bg-muted"
-        >
-          Cerrar
-        </button>
+              return (
+                <>
+                  <PolylineF
+                    path={closedPath}
+                    options={{ strokeColor: "#3b82f6", strokeWeight: 4 }}
+                  />
+                  {path.map((pos, i) => (
+                    <MarkerF key={i} position={pos} />
+                  ))}
+                </>
+              );
+            })()}
+          </GoogleMap>
+
+          <div className="flex justify-end mt-4">
+            <button
+              onClick={() => setViewMapPoints(null)}
+              className="px-4 py-2 border rounded hover:bg-muted"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-)}
+    )}
+
 
     </div>
   );
