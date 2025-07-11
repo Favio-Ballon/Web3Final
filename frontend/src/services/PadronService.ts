@@ -98,7 +98,24 @@ export class PadronService {
     });
   }
 
-  
+  static buscarVotantePorCI(ci: number): Promise<VotantePublic> {
+    return new Promise<VotantePublic>((resolve, reject) => {
+      apiClient
+        .get(`padron/votantes/buscar/${ci}`)
+        .then((response) => {
+          if (response.data) {
+            resolve(response.data);
+          } else {
+            reject(new Error("Votante no encontrado"));
+          }
+        })
+        .catch((error) => {
+          console.error("Error al buscar votante por CI:", error);
+          reject(new Error("Error al buscar el votante: " + error.message));
+        });
+    });
+  }
+
   updateVotante(votante: VotanteUpdateRequest, id: number): Promise<Votante> {
     return new Promise<Votante>((resolve, reject) => {
       const formData = new FormData();

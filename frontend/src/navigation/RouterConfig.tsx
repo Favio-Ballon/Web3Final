@@ -68,9 +68,9 @@ export default function RouterConfig() {
       <Route
         path={`${URLS.VOTACION}/*`}
         element={
-          <ProtectedRoute requiredRoles={["jurado"]}>
+          // <ProtectedRoute requiredRoles={["jurado"]}>
             <VotacionRoutes />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         }
       />
 
