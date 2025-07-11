@@ -42,7 +42,7 @@ export const EleccionForm: React.FC = () => {
       const elecs = await elecService.getElecciones();
       setElecciones(elecs);
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const resetForm = () => {
@@ -72,7 +72,16 @@ export const EleccionForm: React.FC = () => {
       if (editingId) {
         await elecService.editarEleccion(payload as unknown as Eleccion);
       } else {
-        await elecService.crearEleccion(payload as unknown as Eleccion);
+        const elec = await elecService.crearEleccion(
+          payload as unknown as Eleccion
+        );
+        if (elec.id) {
+          const mesas = await elecService.asociarMesas(
+            elec.id,
+            elec.seccion.id
+          );
+          console.log("Mesas asociadas:", mesas);
+        }
       }
       const updated = await elecService.getElecciones();
       setElecciones(updated);

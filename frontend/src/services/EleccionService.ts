@@ -120,4 +120,26 @@ export class EleccionService {
         });
     });
   }
+
+  asociarMesas(eleccionId: number, seccion: number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("eleccionId", eleccionId.toString());
+      formData.append("seccionId", seccion.toString());
+
+      apiClient
+        .post("eleccion/mesas/asignar-eleccion/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          console.error("Error in asociarMesas:", error);
+          reject(new Error("Error al asociar mesas: " + error.message));
+        });
+    });
+  }
 }
