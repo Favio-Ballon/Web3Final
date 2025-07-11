@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Seccion } from '../../../models/Seccion';
 import { SeccionService } from "../../../services/SeccionService";
-import { useAuth } from "../../../hooks/useAuth";
-import { FiTrash2, FiLogOut, FiMapPin } from "react-icons/fi";
+import { FiTrash2, FiMapPin } from "react-icons/fi";
 import {
   GoogleMap,
   MarkerF,
@@ -11,6 +10,7 @@ import {
 } from "@react-google-maps/api";
 
 import { MultiPointPicker } from "../../../components/MultipointPicker";
+import AppHeader from "../../../components/AppHeader";
 
 interface Punto {
   latitud: number;
@@ -30,7 +30,6 @@ interface FormErrors {
 }
 
 export const SeccionForm = () => {
-  const { doLogout, email } = useAuth();
   const [secciones, setSecciones] = useState<Seccion[]>([]);
   const [formData, setFormData] = useState<FormData>({
     nombre: "",
@@ -100,23 +99,14 @@ export const SeccionForm = () => {
     }
   };
 
-  // Loader de Google Maps para el modal de ver ruta
+
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
   });
 
   return (
     <div className="min-h-screen bg-background p-6">
-      {/* Header */}
-      <header className="bg-primary text-primary-foreground p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Gestión de Secciones</h1>
-        <div className="flex items-center gap-4">
-          <span>{email}</span>
-          <button onClick={doLogout} className="flex items-center gap-1">
-            <FiLogOut /> Salir
-          </button>
-        </div>
-      </header>
+      <AppHeader/>
 
       <main className="max-w-4xl mx-auto mt-6 space-y-8">
         {/* Formulario de creación */}

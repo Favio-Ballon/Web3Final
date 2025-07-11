@@ -4,8 +4,8 @@ import { Eleccion } from "../../../models/Eleccion";
 import { Seccion } from "../../../models/Seccion";
 import { EleccionService } from "../../../services/EleccionService";
 import { SeccionService } from "../../../services/SeccionService";
-import { useAuth } from "../../../hooks/useAuth";
-import { FiTrash2, FiEdit3, FiLogOut } from "react-icons/fi";
+import { FiTrash2, FiEdit3 } from "react-icons/fi";
+import AppHeader from "../../../components/AppHeader";
 
 interface FormData {
   id?: number;
@@ -20,7 +20,6 @@ interface FormErrors {
 }
 
 export const EleccionForm: React.FC = () => {
-  const { doLogout, email } = useAuth();
   const [secciones, setSecciones] = useState<Seccion[]>([]);
   const [elecciones, setElecciones] = useState<Eleccion[]>([]);
   const [formData, setFormData] = useState<FormData>({
@@ -113,17 +112,7 @@ export const EleccionForm: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background p-6">
-      <header className="bg-primary text-primary-foreground p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">
-          {editingId ? "Editar" : "Crear"} Elección
-        </h1>
-        <div className="flex items-center gap-4">
-          <span>{email}</span>
-          <button onClick={doLogout} className="flex items-center gap-1">
-            <FiLogOut /> Salir
-          </button>
-        </div>
-      </header>
+      <AppHeader/>
 
       <main className="max-w-4xl mx-auto mt-6 space-y-8">
         {/* Formulario */}

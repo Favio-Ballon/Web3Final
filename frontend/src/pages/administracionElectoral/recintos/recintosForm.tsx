@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { Recinto } from "../../../models/Recinto";
 import { RecintoService } from "../../../services/RecintoService";
 import { SeccionService } from "../../../services/SeccionService";
-import { useAuth } from "../../../hooks/useAuth";
-import { FiTrash2, FiEdit3, FiLogOut, FiMapPin, FiTable } from "react-icons/fi";
+import { FiTrash2, FiEdit3, FiMapPin, FiTable } from "react-icons/fi";
 import { LocationPicker } from "../../../components/LocationPicker";
 import { Seccion } from "../../../models/Seccion";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import { FiMap } from "react-icons/fi";
 import { useNavigate } from "react-router";
+import AppHeader from "../../../components/AppHeader";
 
 interface FormData {
   nombre: string;
@@ -26,7 +26,6 @@ interface FormErrors {
 
 export const RecintoForm = () => {
   const navigate = useNavigate();
-  const { doLogout, email } = useAuth();
   const [secciones, setSecciones] = useState<Seccion[]>([]);
   const [viewLocation, setViewLocation] = useState<{
     lat: number;
@@ -39,7 +38,7 @@ export const RecintoForm = () => {
   }, [viewLocation]);
 
   const { isLoaded: isMapLoaded } = useJsApiLoader({
-    id: "google-map-script", // mismo id que en LocationPicker
+    id: "google-map-script",
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
     libraries: ["marker", "geometry"], // mismas librerías
   });
@@ -140,15 +139,7 @@ export const RecintoForm = () => {
 
   return (
     <div className="min-h-screen bg-background p-6">
-      <header className="bg-primary text-primary-foreground p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Gestión de Recintos</h1>
-        <div className="flex items-center gap-4">
-          <span>{email}</span>
-          <button onClick={doLogout} className="flex items-center gap-1">
-            <FiLogOut /> Salir
-          </button>
-        </div>
-      </header>
+      <AppHeader/>
 
       <main className="max-w-4xl mx-auto mt-6 space-y-8">
         {/* Formulario de creación/edición */}
