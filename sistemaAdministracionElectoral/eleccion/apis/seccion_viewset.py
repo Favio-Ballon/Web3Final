@@ -11,7 +11,6 @@ class SeccionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = Seccion
-        # Incluye 'puntos' junto con los demás campos
         fields = ('id', 'nombre','tipo', 'puntos')
 
     def get_puntos(self, obj):

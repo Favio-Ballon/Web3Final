@@ -5,7 +5,7 @@ from eleccion.models.cargo import Cargo
 class Candidatura(models.Model):
     partido_politico = models.CharField(max_length=100)
     sigla = models.CharField(max_length=10)
-    candidato_id = models.IntegerField()
+    candidato = models.CharField(max_length=100, null=True, blank=True)
     color = models.CharField(max_length=20)
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, related_name='candidaturas_cargo')
     eleccion = models.ForeignKey(Eleccion, on_delete=models.CASCADE, related_name='candidaturas_eleccion')

@@ -29,7 +29,7 @@ class CandidaturaSerializer(serializers.ModelSerializer):
             'id',
             'partido_politico',
             'sigla',
-            'candidato_id',
+            'candidato',
             'color',
             'cargo',  # nested read-only
             'cargo_id',  # select para escritura
