@@ -78,6 +78,9 @@ namespace sistemaPadronElectoral.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Recinto")
+                        .HasColumnType("int");
+
                     b.HasKey("Codigo");
 
                     b.ToTable("Votante");

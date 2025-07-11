@@ -21,3 +21,11 @@ sistemaPadronElectoral/sistemaPadronElectoral/bin/
 
 sistemaPadronElectoral/sistemaPadronElectoral/obj/
 /sistemaPadronElectoral/sistemaPadronElectoral/wwwroot/uploads
+
+apiproxy/node_modules/
+
+sistemaGestionUsuario/.idea/
+
+sistemaAdministracionElectoral/.idea/
+
+SistemaVotacion/.idea/
