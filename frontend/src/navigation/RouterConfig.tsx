@@ -8,6 +8,7 @@ import SeccionRoutes from "../pages/administracionElectoral/secciones";
 import { LoginForm } from "../pages/LoginForm";
 import { VerificacionPadron } from "../pages/VerificacionPadron";
 import { ProtectedRoute } from "../components/ProtectedRoute";
+import RecintoRoutes from "../pages/administracionElectoral/recintos";
 
 export default function RouterConfig() {
   return (
@@ -80,6 +81,22 @@ export default function RouterConfig() {
         element={
           <ProtectedRoute requiredRoles={["admin_elecciones"]}>
             <SeccionRoutes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={`${URLS.ELECCIONES}/*`}
+        element={
+          <ProtectedRoute requiredRoles={["admin_elecciones"]}>
+            <AdminElectoralRoutes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={`${URLS.RECINTOS}/*`}
+        element={
+          <ProtectedRoute requiredRoles={["admin_elecciones"]}>
+            <RecintoRoutes />
           </ProtectedRoute>
         }
       />

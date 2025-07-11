@@ -8,4 +8,6 @@ export const URLS = {
   VERIFICACION_PADRON: "/verificar-padron",
   NOT_FOUND: "*",
   SECCIONES: "/secciones",
+  ELECCIONES: "/elecciones",
+  RECINTOS: "/recintos",
 };
