@@ -6,7 +6,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { FiTrash2, FiEdit3, FiLogOut, FiMapPin } from 'react-icons/fi';
 import { LocationPicker } from '../../../components/LocationPicker';
 import { Seccion } from '../../../models/Seccion';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 import { FiMap } from 'react-icons/fi';
 
 interface FormData {
@@ -26,6 +26,12 @@ export const RecintoForm = () => {
   const { doLogout, email } = useAuth();
   const [secciones, setSecciones] = useState<Seccion[]>([]);
   const [viewLocation, setViewLocation] = useState<{ lat: number; lng: number } | null>(null);
+  useEffect(() => {
+  if (viewLocation) {
+    console.log('VIEW LOCATION:', viewLocation);
+  }
+}, [viewLocation]);
+
   const { isLoaded: isMapLoaded } = useJsApiLoader({
     id: "google-map-script",                 // mismo id que en LocationPicker
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
@@ -195,7 +201,6 @@ export const RecintoForm = () => {
             <thead className="bg-muted">
               <tr>
                 <th className="px-4 py-2 text-left">Nombre</th>
-                <th className="px-4 py-2 text-left">Sección</th>
                 <th className="px-4 py-2 text-left">Latitud</th>
                 <th className="px-4 py-2 text-left">Longitud</th>
                 <th className="px-4 py-2 text-center">Acciones</th>
@@ -205,7 +210,6 @@ export const RecintoForm = () => {
               {recintos.map(r => (
                 <tr key={r.id} className="border-t">
                   <td className="px-4 py-2">{r.nombre}</td>
-                  <td className="px-4 py-2">{r.seccion}</td>
                   <td className="px-4 py-2">{r.latitud.toFixed(6)}</td>
                   <td className="px-4 py-2">{r.longitud.toFixed(6)}</td>
                   <td className="px-4 py-2 text-center flex justify-center gap-2">
@@ -250,7 +254,7 @@ export const RecintoForm = () => {
               zoom={15}
               options={{ streetViewControl: false, mapTypeControl: true }}
             >
-              <Marker position={viewLocation} />
+              <MarkerF position={viewLocation} />
             </GoogleMap>
             <div className="flex justify-end mt-4">
               <button

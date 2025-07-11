@@ -10,4 +10,6 @@ export const URLS = {
   SECCIONES: "/secciones",
   ELECCIONES: "/elecciones",
   RECINTOS: "/recintos",
+  CARGOS: "/cargos",
+  CANDIDATURAS: "/candidaturas",
 };

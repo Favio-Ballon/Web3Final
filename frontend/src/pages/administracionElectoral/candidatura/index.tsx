@@ -1,7 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import CandidaturaForm from "../administracionElectoral/candidatura/candidaturaForm";
+import CandidaturaForm from "./candidaturaForm";
 
-export default function CandidaturaRoutes() {
+
+export default function PadronElectoralRoutes() {
   return (
     <Routes>
       <Route path="" element={<CandidaturaForm />} />

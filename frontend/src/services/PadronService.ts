@@ -179,4 +179,23 @@ export class PadronService {
         });
     });
   }
+  filtrarUbicacion({departamento, ciudad, provincia}: {departamento?: string; ciudad?: string; provincia?: string}): Promise<Array<Votante>> {
+    return new Promise<Array<Votante>>((resolve, reject) => {
+      const params: Record<string, string> = {};
+      if (departamento) params.departamento = departamento;
+      if (ciudad) params.ciudad = ciudad;
+      if (provincia) params.provincia = provincia;
+
+      apiClient
+        .get("padron/votantes/filtrar", { params })
+        .then((response) => {
+          const data = response.data?.results || response.data || [];
+          resolve(Array.isArray(data) ? data : []);
+        })
+        .catch((error) => {
+          console.error("Error in filtrarUbicacion:", error);
+          reject(new Error("Error al filtrar votantes: " + error.message));
+        });
+    });
+  }
 }
