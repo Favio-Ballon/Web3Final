@@ -10,6 +10,8 @@ import { VerificacionPadron } from "../pages/VerificacionPadron";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import RecintoRoutes from "../pages/administracionElectoral/recintos";
 import EleccionesRoutes from "../pages/administracionElectoral/elecciones";
+import CargosRoutes from "../pages/administracionElectoral/cargos";
+import CandidaturaRoutes from "../pages/padrónElectoral";
 
 export default function RouterConfig() {
   return (
@@ -98,6 +100,22 @@ export default function RouterConfig() {
         element={
           <ProtectedRoute requiredRoles={["admin_elecciones"]}>
             <RecintoRoutes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={`${URLS.CARGOS}/*`}
+        element={
+          <ProtectedRoute requiredRoles={["admin_elecciones"]}>
+            <CargosRoutes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={`${URLS.CANDIDATURAS}/*`}
+        element={
+          <ProtectedRoute requiredRoles={["admin_elecciones"]}>
+            <CandidaturaRoutes />
           </ProtectedRoute>
         }
       />
